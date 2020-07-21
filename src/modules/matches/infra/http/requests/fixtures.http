@@ -1,0 +1,22 @@
+POST http://localhost:3000/fixture
+Content-Type: application/json
+
+{
+    "league": {
+        "name": "Campeonato Mineiro",
+        "year": 2019
+    },
+    "round": "10ª rodada",
+    "homeTeam": {
+        "galodigital": "Uberlândia-MG"
+    },
+    "awayTeam": {
+        "galodigital": "Atlético"
+    },
+    "referee": "Wanderson Alves de Souza",
+    "ground": "Parque do Sabiá",
+    "matchDate": "2018-03-08T16:00:00.000Z",
+    "externalReferences": {
+        "galodigital": "201815PRO"
+    }
+}

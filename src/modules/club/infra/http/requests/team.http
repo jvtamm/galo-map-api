@@ -1,0 +1,27 @@
+POST http://localhost:3000/team
+Content-Type: application/json
+
+{
+    "name": "Uberlândia Esporte Clube",
+    "country": "5eee526420bf7300840296cc",
+    "externalReferences": {
+        "galodigital": "Uberlândia-MG"
+    },
+    "founded": 1922
+}
+
+######
+POST http://localhost:3000/team/squad
+Content-Type: application/json
+
+{
+    "teamId": "5ef36700597409017dbe35d3",
+    "playerId": "5ef2df005f5e9d01eecbadb9"
+}
+
+
+######
+GET http://localhost:3000/team?galodigital=Uberlândia-MG
+
+######
+GET http://localhost:3000/team/5ef269ddc2b70103fa69df9b/squad

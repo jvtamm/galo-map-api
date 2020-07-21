@@ -1,0 +1,13 @@
+GET http://localhost:3000/contract?teamId=5ef36700597409017dbe35d3&startingDate=2017-07-01T13:22:15.466Z&endingDate=2019-07-01T13:22:15.466Z
+
+######
+POST http://localhost:3000/contract
+Content-Type: application/json
+
+{
+    "teamId": "5ef36700597409017dbe35d3",
+    "playerId": "5ef2df005f5e9d01eecbadb9",
+    "startingDate": "2020-07-01T13:22:15.466Z",
+    "endingDate": "2021-07-01T13:22:15.466Z"
+}
+

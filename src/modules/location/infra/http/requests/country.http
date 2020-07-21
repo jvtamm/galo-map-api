@@ -1,0 +1,14 @@
+GET http://localhost:3000/country?code=BR
+
+######
+GET http://localhost:3000/country/5f00c0f29f9b880058e6e362
+
+######
+POST http://localhost:3000/country/
+Content-Type: application/json
+
+{
+    "name": "Colômbia",
+    "alpha2": "CO",
+    "alpha3": "COL"
+}

@@ -1,0 +1,23 @@
+GET http://localhost:3000/player/5ef2df005f5e9d01eecbadb9
+
+######
+GET http://localhost:3000/player?galodigital=Victor_Leandro_Bagy
+
+######
+POST http://localhost:3000/player
+Content-Type: application/json
+
+{
+    "name": "Yimmi Javier Chará Zamora",
+    "dateOfBirth": "1991-04-02T00:00:00",
+    "nationality": "5f00c0f29f9b880058e6e362",
+    "position": {
+        "name": "Atacante",
+        "code": "S"
+    },
+    "externalReferences": {
+        "galodigital": "Yimmi_Javier_Chará_Zamora"
+    },
+    "displayName": "Chará",
+    "height": 1.62
+}
