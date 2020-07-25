@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 
 import GenericMongoRepository, { BaseCollection } from '@infra/database/mongodb/generic-repo';
 import Maybe from '@core/maybe';
-import { SeasonRepo } from '@modules/matches/repos/season-repo';
+import { SeasonRepo, SeasonRange } from '@modules/matches/repos/season-repo';
 import { DatabaseDriver } from '@infra/contracts';
 import { TYPES } from '@config/ioc/types';
 import { Season } from '@modules/matches/domain/season';
@@ -37,8 +37,18 @@ export class MongoSeasonRepo extends GenericMongoRepository<Season, SeasonCollec
         return Maybe.fromNull(season).map(this.mapper.toDomain);
     }
 
+    async getRange(year: number, range?: number): Promise<SeasonRange> {
+        const previous = await this.collection.find({ year: { $lt: year } }).sort({ year: -1 }).limit(range || 1).toArray();
+        const next = await this.collection.find({ year: { $gt: year } }).sort({ year: 1 }).limit(range || 1).toArray();
+
+        return {
+            previous: previous.map(this.mapper.toDomain),
+            next: next.map(this.mapper.toDomain),
+        };
+    }
+
     async list(): Promise<Season[]> {
-        const seasons = await this.collection.find().sort({ _creationDate: -1 }).toArray();
+        const seasons = await this.collection.find().sort({ year: 1 }).toArray();
 
         return seasons.map(this.mapper.toDomain);
     }

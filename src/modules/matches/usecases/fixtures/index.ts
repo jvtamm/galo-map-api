@@ -7,9 +7,11 @@ import { ITeamService } from '@modules/club/usecases/team';
 
 import { LeagueService } from '@modules/matches/usecases/league';
 import { CreateFixtureDTO, CreateFixtureResponse, CreateFixture } from './create';
+import { SearchFixtures, SearchFixturesDTO, SearchFixturesRespose } from './search';
 
 export interface IFixtureService {
     create(request: CreateFixtureDTO): Promise<CreateFixtureResponse>;
+    search(request: SearchFixturesDTO): Promise<SearchFixturesRespose>;
 }
 
 @injectable()
@@ -26,5 +28,11 @@ export class FixtureService implements IFixtureService {
         const createFixture = new CreateFixture(this._fixtureRepo, this._teamServices, this._groundServices, this._leagueService);
 
         return createFixture.execute(request);
+    }
+
+    search(request: SearchFixturesDTO): Promise<SearchFixturesRespose> {
+        const searchFixtures = new SearchFixtures(this._fixtureRepo);
+
+        return searchFixtures.execute(request);
     }
 }

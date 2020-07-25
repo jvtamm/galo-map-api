@@ -41,43 +41,33 @@ class MongoStadiumRepo extends GenericMongoRepository<Stadium, StadiumCollection
     }
 
     async exists(name: string): Promise<boolean> {
-        const stadium = await this.collection.findOne({ $or: [{ name }, { nickname: name }] });
+        const stadium = await this.getStadiumByNameOrNickname(name);
 
-        return Boolean(stadium);
+        return stadium.isSome();
     }
 
     async getStadiumByName(name: string): Promise<Maybe<Stadium>> {
         const stadium = await this.collection.findOne({ name });
 
         return Maybe.fromNull(stadium).map(this.mapper.toDomain);
-        // let country: Country;
-        // if (stadium) {
-        //     country = await this.loadCountry(stadium.address.country) as Country;
-        // }
-
-        // return Maybe.fromNull(stadium).map<StadiumCollection>((persistedStadium: any) => {
-        //     const updatedStadium = { ...persistedStadium };
-        //     updatedStadium.address.country = country;
-
-        //     return updatedStadium;
-        // }).map(this.mapper.toDomain);
     }
 
     async getStadiumByNickname(nickname: string): Promise<Maybe<Stadium>> {
         const stadium = await this.collection.findOne({ nickname });
 
         return Maybe.fromNull(stadium).map(this.mapper.toDomain);
-        // let country: Country;
-        // if (stadium) {
-        //     country = await this.loadCountry(stadium.address.country) as Country;
-        // }
+    }
 
-        // return Maybe.fromNull(stadium).map<StadiumCollection>((persistedStadium: any) => {
-        //     const updatedStadium = { ...persistedStadium };
-        //     updatedStadium.address.country = country;
+    async getStadiumByNameOrNickname(value: string): Promise<Maybe<Stadium>> {
+        const regex = new RegExp(`^${value}$`, 'i');
+        const stadium = await this.collection.findOne({
+            $or: [
+                { name: regex },
+                { nickname: regex },
+            ],
+        });
 
-        //     return updatedStadium;
-        // }).map(this.mapper.toDomain);
+        return Maybe.fromNull(stadium).map(this.mapper.toDomain);
     }
 
     private async loadCountry(countryId: string): Promise<Country | null> {

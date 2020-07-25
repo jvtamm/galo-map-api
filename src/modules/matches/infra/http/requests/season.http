@@ -1,1 +1,4 @@
 GET http://localhost:3000/season
+
+######
+GET http://localhost:3000/season?year=2019

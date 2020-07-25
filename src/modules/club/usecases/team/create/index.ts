@@ -79,6 +79,7 @@ export class CreateTeam implements UseCase<CreateTeamDTO, CreateTeamResponse> {
             abbreviation: request.abbreviation,
             refs: ExternalReferenceFactory.fromDTO(externalReferences),
             country,
+            ...request.displayName && { displayName: request.displayName },
             ...founded && { founded },
         };
 

@@ -10,6 +10,7 @@ import { Country } from './country';
 
 export interface TeamProps {
     name: string;
+    displayName?: string;
     country: Country
     refs: ExternalReference[];
     abbreviation?: string;
@@ -60,6 +61,10 @@ export class Team extends Entity<TeamProps, string | number> {
 
     getName(): string {
         return this.props.name;
+    }
+
+    getDisplayName(): Maybe<string> {
+        return Maybe.fromUndefined(this.props.displayName);
     }
 
     getAbbreviation(): Maybe<string> {

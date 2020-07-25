@@ -48,10 +48,13 @@ export class Nominatim implements Geocoding, PlaceSearch {
     }
 
     async search(query: string): Promise<Result<Coordinates>> {
-        const endpoint = `/search?q=${query}`;
+        const params = {
+            q: query,
+            format: 'geojson',
+        };
 
         try {
-            const { data } = await this._httpInstance.get(endpoint);
+            const { data } = await this._httpInstance.get('/search', { params });
             if (!data) return Result.fail(`Failed to query with value ${query}`);
 
             const { geometry } = data.features[0];

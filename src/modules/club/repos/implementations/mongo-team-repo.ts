@@ -17,6 +17,7 @@ export interface TeamCollection {
     _id?: ObjectId;
     name: string;
     abbreviation: string;
+    displayName: string;
     country: CountryEmbedded;
     externalReferences: Refs[]
     founded?: number;

@@ -17,8 +17,15 @@ interface FixtureTeamDTO {
     currentPosition?: number;
 }
 
+export interface TournamentDTO {
+    id: string;
+    name: string;
+    season: number;
+}
+
 export interface FixtureDTO {
-    league: LeagueEditionDTO;
+    id: string;
+    tournament: TournamentDTO;
     round: string;
     matchDate: string;
     ground: Stadium;
@@ -45,8 +52,8 @@ export const FixtureMap: StaticMapper<Fixture, FixtureCollection> = {
         };
 
         const props = {
-            // league: LeagueEditionMap.toDomain(raw.leagueEdition),
-            league: raw.leagueEdition,
+            league: LeagueEditionMap.toDomain(raw.leagueEdition),
+            // league: raw.leagueEdition,
             round: raw.round,
             matchDate: new Date(raw.matchDate),
             refs: raw.externalReferences.map((ref: Refs) => ExternalReferenceFactory.create(ref)),
@@ -113,15 +120,22 @@ export const FixtureMap: StaticMapper<Fixture, FixtureCollection> = {
             ...fixture.awayTeam.currentPosition && { currentPosition: fixture.awayTeam.currentPosition },
         };
 
+        const edition: LeagueEditionDTO = LeagueEditionMap.toDTO(fixture.league);
+
         return {
-            league: LeagueEditionMap.toDTO(fixture.league),
+            id: fixture.id.fold('')((id) => id as string),
+            tournament: {
+                id: edition.id,
+                name: edition.league.name,
+                season: edition.season.year,
+            },
             round: fixture.round,
             matchDate: fixture.matchDate.toISOString(),
             ground: fixture.ground,
-            referee: fixture.referee,
+            referee: fixture.referee.fold('')((ref) => ref as string),
             homeTeam,
             awayTeam,
             ...winner && { winner },
-        };
+        } as FixtureDTO;
     },
 };

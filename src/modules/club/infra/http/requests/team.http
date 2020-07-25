@@ -2,12 +2,13 @@ POST http://localhost:3000/team
 Content-Type: application/json
 
 {
-    "name": "Uberlândia Esporte Clube",
-    "country": "5eee526420bf7300840296cc",
+    "name": "Clube Atlético Mineiro",
+    "country": "5f1889477a626a019310a355",
+    "displayName": "Atlético",
     "externalReferences": {
-        "galodigital": "Uberlândia-MG"
+        "galodigital": "Atlético"
     },
-    "founded": 1922
+    "founded": 1908
 }
 
 ######

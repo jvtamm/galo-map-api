@@ -4,6 +4,7 @@ import { Guard } from '@core/guard';
 
 export interface TeamProps {
     name: string;
+    displayName: string;
     abbreviation: string;
     country: string;
 }
@@ -34,11 +35,15 @@ export class Team {
     }
 
     get name(): string {
+        return this._props.name;
+    }
+
+    get displayName(): string {
         if (this._props.country !== 'BRA') {
-            return `${this._props.name}-${this._props.country}`;
+            return `${this._props.displayName}-${this._props.country}`;
         }
 
-        return this._props.name;
+        return this._props.displayName;
     }
 
     get abbreviation(): string {

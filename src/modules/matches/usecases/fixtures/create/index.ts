@@ -117,6 +117,7 @@ export class CreateFixture implements UseCase<CreateFixtureDTO, CreateFixtureRes
             name: team.name,
             abbreviation: team.abbreviation as string,
             country: team.country.code,
+            displayName: team.displayName,
         };
 
         const matchTeam = Team.create(teamProps, team.id);
@@ -140,7 +141,7 @@ export class CreateFixture implements UseCase<CreateFixtureDTO, CreateFixtureRes
         const stadium: Stadium = {
             name: stadiumResult.value.name,
             coordinates: stadiumResult.value.coordinates,
-            ...stadiumResult.value.nickname && { nickname: stadiumResult.value.name },
+            ...stadiumResult.value.nickname && { nickname: stadiumResult.value.nickname },
         };
 
         return Result.ok(stadium);

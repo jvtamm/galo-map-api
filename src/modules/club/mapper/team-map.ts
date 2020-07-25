@@ -14,6 +14,7 @@ export interface TeamDTO {
     name: string;
     country: Country;
     abbreviation?: string;
+    displayName: string;
     founded?: number;
     primaryColor?: string;
     secondaryColor?: string;
@@ -32,6 +33,7 @@ class TeamMap implements Mapper<Team> {
         const props = {
             name: raw.name,
             abbreviation: raw.abbreviation,
+            displayName: raw.displayName,
             country: CountryMap.toDomain(raw.country),
             refs: raw.externalReferences.map((ref: Refs) => ExternalReferenceFactory.create(ref)),
             ...raw.founded && { founded: raw.founded },
@@ -45,6 +47,9 @@ class TeamMap implements Mapper<Team> {
 
     static toPersistance(team: Team): TeamCollection {
         const abbreviation = team.getAbbreviation()
+            .fold<string>('')((value) => value as string);
+
+        const displayName = team.getDisplayName()
             .fold<string>('')((value) => value as string);
 
         const maybeFounded = team.getFounded()
@@ -66,6 +71,7 @@ class TeamMap implements Mapper<Team> {
             externalReferences: team.getRefs().fold([] as Refs[])((value) => value as Refs[]),
             ...maybeId && { _id: maybeId },
             ...abbreviation && { abbreviation },
+            ...displayName && { displayName },
             ...maybeFounded && { founded: maybeFounded },
             ...maybePrimaryColor && { primaryColor: maybePrimaryColor },
             ...maybeSecondaryColor && { secondaryColor: maybeSecondaryColor },
@@ -73,9 +79,12 @@ class TeamMap implements Mapper<Team> {
     }
 
     static toDTO(team: Team): TeamDTO {
+        const name = team.getName();
+
         return {
-            name: team.getName(),
-            abbreviation: team.getId().fold<string>('')((value) => value as string),
+            name,
+            abbreviation: team.getAbbreviation().fold<string>('')((value) => value as string),
+            displayName: team.getDisplayName().fold<string>(name)((value) => value as string),
             country: team.getCountry(),
             id: team.getId().fold<string>('')((value) => value as string),
             founded: team.getFounded().fold<number | null>(null)((value) => value as number),

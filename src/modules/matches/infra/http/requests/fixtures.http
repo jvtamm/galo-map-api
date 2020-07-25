@@ -6,17 +6,21 @@ Content-Type: application/json
         "name": "Campeonato Mineiro",
         "year": 2019
     },
-    "round": "10ª rodada",
+    "round": "1ª rodada",
     "homeTeam": {
-        "galodigital": "Uberlândia-MG"
-    },
-    "awayTeam": {
         "galodigital": "Atlético"
     },
+    "awayTeam": {
+        "galodigital": "Boa Esporte-MG"
+    },
     "referee": "Wanderson Alves de Souza",
-    "ground": "Parque do Sabiá",
-    "matchDate": "2018-03-08T16:00:00.000Z",
+    "ground": "Independência",
+    "matchDate": "2019-01-20T17:00:00.000Z",
     "externalReferences": {
-        "galodigital": "201815PRO"
+        "galodigital": "201901PRO"
     }
 }
+
+
+######
+GET http://localhost:3000/fixture?year=2020

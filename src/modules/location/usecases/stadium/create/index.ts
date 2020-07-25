@@ -81,7 +81,9 @@ export class CreateStadium implements UseCase<CreateStadiumDTO, CreateStadiumRes
     }
 
     async loadCountry(stadium: StadiumInfo): Promise<Result<StadiumProps>> {
-        const maybeCountry = await this._countryRepo.getCountryByCode(stadium.country as string);
+        const countryCode = stadium.country && stadium.country.length === 3 ? stadium.country : 'BRA';
+
+        const maybeCountry = await this._countryRepo.getCountryByCode(countryCode);
         if (!maybeCountry.isSome()) return Result.fail(CreateStadiumErrors.CountryNotSupported);
 
         const country = maybeCountry.join();

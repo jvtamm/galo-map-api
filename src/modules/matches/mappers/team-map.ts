@@ -7,6 +7,7 @@ export interface TeamCollection {
     _id: ObjectId;
     name: string;
     abbreviation: string;
+    displayName: string;
     country: string;
 }
 
@@ -14,6 +15,7 @@ export interface TeamDTO {
     id: string;
     name: string;
     abbreviation: string;
+    displayName: string;
     country: string;
 }
 
@@ -25,6 +27,7 @@ export const TeamMap: StaticMapper<Team, TeamCollection> = {
             name: raw.name,
             abbreviation: raw.abbreviation,
             country: raw.country,
+            displayName: raw.displayName,
             ...raw.currentPosition && { currentPosition: raw.currentPosition },
         };
 
@@ -41,6 +44,7 @@ export const TeamMap: StaticMapper<Team, TeamCollection> = {
             _id,
             name: team.name,
             abbreviation: team.abbreviation,
+            displayName: team.displayName,
             country: team.country,
         };
     },
@@ -49,6 +53,7 @@ export const TeamMap: StaticMapper<Team, TeamCollection> = {
         id: team.id.fold('')((id) => id as string),
         name: team.name,
         abbreviation: team.abbreviation,
+        displayName: team.displayName,
         country: team.country,
     }),
 };

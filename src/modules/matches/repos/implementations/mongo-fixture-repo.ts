@@ -5,7 +5,7 @@ import { EmbeddedLeagueEdition } from '@modules/matches/mappers/league-edition-m
 import { EmbeddedStadium } from '@modules/matches/mappers/stadium-map';
 import { Fixture, FixtureTeam } from '@modules/matches/domain/fixture';
 import { FixtureMap } from '@modules/matches/mappers/fixture-map';
-import { FixtureRepo } from '@modules/matches/repos/fixture-repo';
+import { FixtureRepo, FixtureFilters } from '@modules/matches/repos/fixture-repo';
 import { LeagueEditionRepo } from '@modules/matches/repos/league-edition';
 import { Refs } from '@modules/club/domain/external-references';
 import { TeamCollection } from '@modules/matches/mappers/team-map';
@@ -61,13 +61,64 @@ export class MongoFixtureRepo extends GenericMongoRepository<Fixture, FixtureCol
         return Boolean(maybeFixture);
     }
 
-    protected async loadDependencies(collectionObject: FixtureCollection): Promise<any> {
+    // eslint-disable-next-line class-methods-use-this
+    protected loadDependencies(collectionObject: FixtureCollection): any {
         const object: any = { ...collectionObject };
-        const leagueEdition = await this._leagueEditionRepo.getById(collectionObject.leagueEdition._id.toHexString());
 
-        if (leagueEdition.isNone()) return collectionObject;
+        object.leagueEdition = {
+            _id: collectionObject.leagueEdition._id,
+            league: { name: collectionObject.leagueEdition.name },
+            season: { year: collectionObject.leagueEdition.year },
+        };
 
-        object.leagueEdition = leagueEdition.join();
         return object;
+
+        // const leagueEdition = await this._leagueEditionRepo.getById(collectionObject.leagueEdition._id.toHexString());
+
+        // if (leagueEdition.isNone()) return collectionObject;
+
+        // object.leagueEdition = leagueEdition.join();
+        // return object;
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    private createFilterQuery(filters: FixtureFilters) {
+        const filtersMap = new Map<string, Function>();
+        filtersMap.set('year', (query: any, value: number) => {
+            query.$and.push({
+                matchDate: {
+                    $gte: new Date(value, 0, 1, 0, 0, 0),
+                    $lt: new Date(value, 11, 31, 23, 59, 59),
+                },
+            });
+            return query;
+        });
+
+        const query: any = {
+            $and: [],
+        };
+
+        Object.entries(filters).forEach(([key, value]) => {
+            const handler = filtersMap.get(key);
+            if (handler) handler(query, value);
+        });
+
+        return query;
+    }
+
+    async search(filters: FixtureFilters): Promise<Fixture[]> {
+        const query = this.createFilterQuery(filters);
+
+        const fixtures = await this.collection.find(query).toArray();
+
+        const result: Fixture[] = [];
+        for (let i = 0; i < fixtures.length; i += 1) {
+            // eslint-disable-next-line no-await-in-loop
+            const processedObj = await this.loadDependencies(fixtures[i]);
+
+            result.push(this.mapper.toDomain(processedObj));
+        }
+
+        return result;
     }
 }

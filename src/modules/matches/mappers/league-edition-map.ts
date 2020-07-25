@@ -63,6 +63,7 @@ export const LeagueEditionMap: StaticMapper<LeagueEdition, LeagueEditionCollecti
 export interface EmbeddedLeagueEdition {
     _id: ObjectId;
     name: string;
+    year: number;
 }
 
 export const toEmbeddedLeagueEdition = (leagueEdition: LeagueEdition) => {
@@ -71,5 +72,6 @@ export const toEmbeddedLeagueEdition = (leagueEdition: LeagueEdition) => {
     return {
         _id: persistanceLeagueEdition._id,
         name: persistanceLeagueEdition.league.name,
+        year: persistanceLeagueEdition.season.year,
     } as EmbeddedLeagueEdition;
 };

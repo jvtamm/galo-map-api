@@ -10,6 +10,7 @@ import { LeagueRepo } from '@modules/matches/repos/league-repo';
 import { Season } from '@modules/matches/domain/season';
 import { UseCase } from '@core/usecase';
 
+import { SeasonDTO } from '@modules/matches/mappers/season-map';
 import { AddLeagueEditionDTO } from './dto';
 import { AddLeagueEditionErrors } from './errors';
 
@@ -58,20 +59,25 @@ export class AddLeagueEdition implements UseCase<AddLeagueEditionDTO, AddLeagueE
     }
 
     private async getSeason(year: number): Promise<Result<Season>> {
-        let seasonResult = await this._seasonService.getByYear({ year });
+        const seasonResult = await this._seasonService.getByYear({ year });
 
+        let season: SeasonDTO;
         if (seasonResult.failure) {
-            seasonResult = await this._seasonService.create({ year });
+            const seasonCreationResult = await this._seasonService.create({ year });
             if (seasonResult.failure) return Result.fail(seasonResult.error as string);
+
+            season = seasonCreationResult.value;
+        } else {
+            season = seasonResult.value.season;
         }
 
-        const { value } = seasonResult;
+        // const { value } = seasonResult;
         const props = {
-            year: value.year,
-            ...value.label && { label: value.label },
+            year: season.year,
+            ...season.label && { label: season.label },
         };
 
-        return Season.create(props, new Identifier<string>(value.id as string));
+        return Season.create(props, new Identifier<string>(season.id as string));
     }
 
     private async getLeague(name: string): Promise<Result<League>> {
