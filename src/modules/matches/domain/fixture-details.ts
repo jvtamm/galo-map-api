@@ -1,53 +1,54 @@
 /* eslint-disable operator-linebreak */
 import Result from '@core/result';
-// import { Guard } from '@core/guard';
+import { Guard } from '@core/guard';
 
+import Maybe from '@core/maybe';
 import { FixtureEvents } from './fixture-events';
 import { Player } from './player';
 
-interface SummonedPlayers {
+export interface SummonedPlayers {
     bench: Player[];
     lineup: Player[];
 }
 
 export interface FixtureDetailsProps {
-    events: FixtureEvents[];
+    events?: FixtureEvents[];
     attendance?: number;
-    homePlayers?: SummonedPlayers;
-    awayPlayers?: SummonedPlayers;
+    homePlayers: SummonedPlayers;
+    awayPlayers: SummonedPlayers;
 }
 
 export class FixtureDetails {
     private constructor(
-        private _events: FixtureEvents[],
-        private _homePlayers?: SummonedPlayers,
-        private _awayPlayers?: SummonedPlayers,
+        private _homePlayers: SummonedPlayers,
+        private _awayPlayers: SummonedPlayers,
+        private _events?: FixtureEvents[],
         private _attendance?: number,
     // eslint-disable-next-line no-empty-function
     ) {}
 
     static create(props: FixtureDetailsProps): Result<FixtureDetails> {
-        // const guardedProps = [
-        //     { argument: props.events, argumentName: 'events' },
-        //     { argument: props.homePlayers, argumentName: 'homePlayers' },
-        //     { argument: props.awayPlayers, argumentName: 'awayPlayers' },
-        // ];
+        const guardedProps = [
+            // { argument: props.events, argumentName: 'events' },
+            { argument: props.homePlayers, argumentName: 'homePlayers' },
+            { argument: props.awayPlayers, argumentName: 'awayPlayers' },
+        ];
 
-        // const guardResult = Guard.againstNullOrUndefinedBulk(guardedProps);
-        // if (!guardResult.succeeded) {
-        //     const error = guardResult.message || 'Unexpected error';
-        //     return Result.fail<FixtureDetails>(error);
-        // }
+        const guardResult = Guard.againstNullOrUndefinedBulk(guardedProps);
+        if (!guardResult.succeeded) {
+            const error = guardResult.message || 'Unexpected error';
+            return Result.fail<FixtureDetails>(error);
+        }
 
-        // if (!props.homePlayers.bench || !props.homePlayers.lineup) {
-        //     return Result.fail<FixtureDetails>('Home players must have lineup and bench properties');
-        // }
+        if (!props.homePlayers?.bench || !props.homePlayers?.lineup) {
+            return Result.fail<FixtureDetails>('Home players must have lineup and bench properties');
+        }
 
-        // if (!props.awayPlayers.bench || !props.awayPlayers.lineup) {
-        //     return Result.fail<FixtureDetails>('Away players must have lineup and bench properties');
-        // }
+        if (!props.awayPlayers?.bench || !props.awayPlayers?.lineup) {
+            return Result.fail<FixtureDetails>('Away players must have lineup and bench properties');
+        }
 
-        const fixtureDetails = new FixtureDetails(props.events, props.homePlayers, props.awayPlayers, props.attendance);
+        const fixtureDetails = new FixtureDetails(props.homePlayers, props.awayPlayers, props.events, props.attendance);
         return Result.ok(fixtureDetails);
     }
 
@@ -65,6 +66,22 @@ export class FixtureDetails {
 
         return bench.some(({ id, name }) => player.id === id || player.name === name)
                || lineup.some(({ id, name }) => player.id === id || player.name === name);
+    }
+
+    get events(): FixtureEvents[] {
+        return this._events || [];
+    }
+
+    get homePlayers(): SummonedPlayers {
+        return this._homePlayers;
+    }
+
+    get awayPlayers(): SummonedPlayers {
+        return this._awayPlayers;
+    }
+
+    get attendance(): Maybe<number> {
+        return Maybe.fromUndefined(this._attendance);
     }
 
     // getPlayerSummary(player: Player): any {

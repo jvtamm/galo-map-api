@@ -1,7 +1,9 @@
 import Identifier from '@core/identifier';
 import Result from '@core/result';
 import { FixtureMap } from '@modules/matches/mappers/fixture-map';
-import { FixtureProps, FixtureTeam, Fixture } from '@modules/matches/domain/fixture';
+import {
+    FixtureProps, FixtureTeam, Fixture, FixtureStatusOptions,
+} from '@modules/matches/domain/fixture';
 import { FixtureRepo } from '@modules/matches/repos/fixture-repo';
 import { ILeagueService } from '@modules/matches/usecases/league';
 import { IStadiumService } from '@modules/location/usecases/stadium';
@@ -67,6 +69,7 @@ export class CreateFixture implements UseCase<CreateFixtureDTO, CreateFixtureRes
         if (!references.length) return Result.fail(CreateFixtureErrors.ProviderNotSupported);
 
         const props: FixtureProps = {
+            status: FixtureStatusOptions.NotStarted,
             league: leagueEditionResult.value,
             round: request.round,
             homeTeam: homeTeamResult.value,

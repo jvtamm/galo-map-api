@@ -17,11 +17,19 @@ export interface FixtureTeam {
     score: number;
 }
 
+export enum FixtureStatusOptions {
+    NotStarted = 'NS',
+    MatchFinished = 'FT'
+}
+
+export type FixtureStatus = FixtureStatusOptions.NotStarted | FixtureStatusOptions.MatchFinished;
+
 export interface FixtureProps {
     league: LeagueEdition;
     round: string;
     homeTeam: FixtureTeam;
     awayTeam: FixtureTeam;
+    status: FixtureStatus;
     referee?: string;
     ground: Stadium;
     matchDate: Date;
@@ -39,6 +47,7 @@ export class Fixture extends Entity<FixtureProps, string> {
             { argument: props.round, argumentName: 'round' },
             { argument: props.ground, argumentName: 'ground' },
             { argument: props.league, argumentName: 'league' },
+            { argument: props.status, argumentName: 'status' },
             { argument: props.homeTeam, argumentName: 'homeTeam' },
             { argument: props.awayTeam, argumentName: 'awayTeam' },
             { argument: props.matchDate, argumentName: 'matchDate' },
@@ -107,5 +116,13 @@ export class Fixture extends Entity<FixtureProps, string> {
             provider: ref.getProvider(),
             ref: ref.serialize(),
         }));
+    }
+
+    get status(): FixtureStatus {
+        return this.props.status;
+    }
+
+    get details(): Maybe<FixtureDetails> {
+        return Maybe.fromUndefined(this.props.details);
     }
 }

@@ -32,6 +32,7 @@ const FixtureTypes = {
     LeagueService: Symbol('LeagueService'),
     SeasonService: Symbol('SeasonService'),
 
+    FixtureDetailsRepo: Symbol('FixtureDetailsRepo'),
     FixtureRepo: Symbol('FixtureRepo'),
     LeagueRepo: Symbol('LeagueRepo'),
     LeagueEditionRepo: Symbol('LeagueEditionRepo'),

@@ -7,6 +7,7 @@ import MongoPlayerRepo from '@modules/club/repos/implementations/mongo-player-re
 import MongoSquadRepo from '@modules/club/repos/implementations/mongo-squad-repo';
 import MongoStadiumRepo from '@modules/location/repos/implementations/mongo-stadium-repo';
 import MongoTeamRepo from '@modules/club/repos/implementations/mongo-team-repo';
+import { MongoFixtureDetailsRepo } from '@modules/matches/repos/implementations/mongo-fixture-details-repo';
 import { MongoFixtureRepo } from '@modules/matches/repos/implementations/mongo-fixture-repo';
 import { MongoLeagueEditionRepo } from '@modules/matches/repos/implementations/mongo-league-edition-repo';
 import { MongoLeagueRepo } from '@modules/matches/repos/implementations/mongo-league-repo';
@@ -15,6 +16,7 @@ import { MongoSeasonRepo } from '@modules/matches/repos/implementations/mongo-se
 // Interfaces
 import { ContractRepo } from '@modules/club/repos/contract-repo';
 import { CountryRepo } from '@modules/location/repos/country-repo';
+import { FixtureDetailsRepo } from '@modules/matches/repos/fixture-details-repo';
 import { FixtureRepo } from '@modules/matches/repos/fixture-repo';
 import { Geocoding } from '@modules/location/adapters/geocoding';
 import { LeagueEditionRepo } from '@modules/matches/repos/league-edition';
@@ -61,6 +63,7 @@ const fixtureBind = (bind: interfaces.Bind) => {
     bind<ILeagueService>(TYPES.LeagueService).to(LeagueService).inSingletonScope();
     bind<ISeasonService>(TYPES.SeasonService).to(SeasonService).inSingletonScope();
 
+    bind<FixtureDetailsRepo>(TYPES.FixtureDetailsRepo).to(MongoFixtureDetailsRepo).inSingletonScope();
     bind<FixtureRepo>(TYPES.FixtureRepo).to(MongoFixtureRepo).inSingletonScope();
     bind<LeagueEditionRepo>(TYPES.LeagueEditionRepo).to(MongoLeagueEditionRepo).inSingletonScope();
     bind<LeagueRepo>(TYPES.LeagueRepo).to(MongoLeagueRepo).inSingletonScope();

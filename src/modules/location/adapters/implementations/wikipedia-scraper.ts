@@ -52,19 +52,21 @@ function convertDmsToDecimal(dms: string) {
 function convertDmsToDecimalCoords(dms: string) {
     if (!dms) return undefined;
 
-    const match = dms.match(/(S|N)/);
-    if (!match) return undefined;
+    const numberOrDecimal = '(\\d+\\.{0,1}\\d*)';
+    const spaces = '\\s*';
 
-    const index = match.index as number;
-    const latDms = dms.substring(0, index + 1).replace(/ /g, '');
-    const lngDms = dms.substring(index + 1).replace(/ /g, '');
+    const latDmsRegex = new RegExp(`${numberOrDecimal}°${spaces}${numberOrDecimal}'${spaces}${numberOrDecimal}"${spaces}(S|N)`, 'gm');
+    const lngDmsRegex = new RegExp(`${numberOrDecimal}°${spaces}${numberOrDecimal}'${spaces}${numberOrDecimal}"${spaces}(E|L|W|O)`, 'gm');
+
+    const latDms = dms.match(latDmsRegex);
+    const lngDms = dms.match(lngDmsRegex);
+
+    if (!latDms || !lngDms) return undefined;
 
     return {
-        latitude: convertDmsToDecimal(latDms),
-        longitude: convertDmsToDecimal(lngDms),
+        latitude: convertDmsToDecimal(latDms[0].replace(/ /g, '')),
+        longitude: convertDmsToDecimal(lngDms[0].replace(/ /g, '')),
     };
-
-    // return [ convertDmsToDecimal(latDms), convertDmsToDecimal(lngDms) ]
 }
 
 @injectable()

@@ -24,3 +24,6 @@ Content-Type: application/json
 
 ######
 GET http://localhost:3000/fixture?year=2020
+
+######
+GET http://localhost:3000/fixture/5f189640518cc102fe250467

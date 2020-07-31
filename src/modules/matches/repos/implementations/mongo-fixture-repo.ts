@@ -1,16 +1,18 @@
 import GenericMongoRepository, { BaseCollection } from '@infra/database/mongodb/generic-repo';
+import Maybe from '@core/maybe';
 import TYPES from '@config/ioc/types';
 import { DatabaseDriver } from '@infra/contracts';
 import { EmbeddedLeagueEdition } from '@modules/matches/mappers/league-edition-map';
 import { EmbeddedStadium } from '@modules/matches/mappers/stadium-map';
-import { Fixture, FixtureTeam } from '@modules/matches/domain/fixture';
+import { Fixture, FixtureTeam, FixtureStatus } from '@modules/matches/domain/fixture';
+import { FixtureDetailsRepo } from '@modules/matches/repos/fixture-details-repo';
 import { FixtureMap } from '@modules/matches/mappers/fixture-map';
 import { FixtureRepo, FixtureFilters } from '@modules/matches/repos/fixture-repo';
-import { LeagueEditionRepo } from '@modules/matches/repos/league-edition';
+import { ObjectId } from 'mongodb';
 import { Refs } from '@modules/club/domain/external-references';
 import { TeamCollection } from '@modules/matches/mappers/team-map';
 import { inject, injectable } from 'inversify';
-import { ObjectId } from 'mongodb';
+import { FixtureDetails } from '@modules/matches/domain/fixture-details';
 
 interface EmbeddedFixtureTeam {
     team: TeamCollection;
@@ -23,6 +25,7 @@ export interface FixtureCollection extends BaseCollection {
     round: string;
     homeTeam: EmbeddedFixtureTeam;
     awayTeam: EmbeddedFixtureTeam;
+    status: FixtureStatus;
     matchDate: Date;
     ground: EmbeddedStadium;
     externalReferences: Refs[];
@@ -31,11 +34,11 @@ export interface FixtureCollection extends BaseCollection {
 
 @injectable()
 export class MongoFixtureRepo extends GenericMongoRepository<Fixture, FixtureCollection> implements FixtureRepo {
-    private _leagueEditionRepo: LeagueEditionRepo;
+    private _fixtureDetailsRepo: FixtureDetailsRepo;
 
     constructor(
         @inject(TYPES.DbClient) dbClient: DatabaseDriver,
-        @inject(TYPES.LeagueEditionRepo) leagueEditionRepo: LeagueEditionRepo,
+        @inject(TYPES.FixtureDetailsRepo) fixtureDetailsRepo: FixtureDetailsRepo,
     ) {
         const collectionName = 'Fixture';
 
@@ -45,7 +48,7 @@ export class MongoFixtureRepo extends GenericMongoRepository<Fixture, FixtureCol
             FixtureMap,
         );
 
-        this._leagueEditionRepo = leagueEditionRepo;
+        this._fixtureDetailsRepo = fixtureDetailsRepo;
     }
 
     async exists(homeTeam: FixtureTeam, awayTeam: FixtureTeam, matchDate: Date): Promise<boolean> {
@@ -61,6 +64,31 @@ export class MongoFixtureRepo extends GenericMongoRepository<Fixture, FixtureCol
         return Boolean(maybeFixture);
     }
 
+    async save(entity: Fixture): Promise<Fixture> {
+        const fixture = await super.save(entity);
+
+        const fixtureId = fixture.id.fold('')((id) => id as string);
+
+        const maybeDetails = entity.details;
+        if (maybeDetails.isSome()) {
+            await this._fixtureDetailsRepo.save(fixtureId, maybeDetails.join());
+        }
+
+        return fixture;
+    }
+
+    async getById(id: string): Promise<Maybe<Fixture>> {
+        const _id = new ObjectId(id);
+        const fixture = await this.collection.findOne({ _id });
+
+        if (!fixture) return Maybe.none();
+
+        const maybeDetails = await this._fixtureDetailsRepo.getByMatchId(id);
+        fixture.details = maybeDetails.fold<undefined | FixtureDetails>(undefined)((value) => value as FixtureDetails);
+
+        return Maybe.fromNull(fixture).map(this.loadDependencies).map(this.mapper.toDomain);
+    }
+
     // eslint-disable-next-line class-methods-use-this
     protected loadDependencies(collectionObject: FixtureCollection): any {
         const object: any = { ...collectionObject };
@@ -72,13 +100,6 @@ export class MongoFixtureRepo extends GenericMongoRepository<Fixture, FixtureCol
         };
 
         return object;
-
-        // const leagueEdition = await this._leagueEditionRepo.getById(collectionObject.leagueEdition._id.toHexString());
-
-        // if (leagueEdition.isNone()) return collectionObject;
-
-        // object.leagueEdition = leagueEdition.join();
-        // return object;
     }
 
     // eslint-disable-next-line class-methods-use-this

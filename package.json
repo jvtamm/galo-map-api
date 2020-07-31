@@ -4,7 +4,7 @@
     "main": "index.js",
     "license": "MIT",
     "scripts": {
-        "dev:server": "ts-node-dev -r tsconfig-paths/register --respawn --transpileOnly src/server.ts",
+        "dev:server": "ts-node-dev -r tsconfig-paths/register --respawn --transpileOnly --ignore-watch node_modules src/server.ts",
         "prod": "yarn build && node -r ./module-alias.js ./dist/server.js",
         "build": "yarn build-ts",
         "build-ts": "npx tsc -p ."
