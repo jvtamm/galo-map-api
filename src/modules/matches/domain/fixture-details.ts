@@ -14,6 +14,7 @@ export interface SummonedPlayers {
 export interface FixtureDetailsProps {
     events?: FixtureEvents[];
     attendance?: number;
+    referee?: string;
     homePlayers: SummonedPlayers;
     awayPlayers: SummonedPlayers;
 }
@@ -24,6 +25,7 @@ export class FixtureDetails {
         private _awayPlayers: SummonedPlayers,
         private _events?: FixtureEvents[],
         private _attendance?: number,
+        private _referee?: string,
     // eslint-disable-next-line no-empty-function
     ) {}
 
@@ -48,7 +50,7 @@ export class FixtureDetails {
             return Result.fail<FixtureDetails>('Away players must have lineup and bench properties');
         }
 
-        const fixtureDetails = new FixtureDetails(props.homePlayers, props.awayPlayers, props.events, props.attendance);
+        const fixtureDetails = new FixtureDetails(props.homePlayers, props.awayPlayers, props.events, props.attendance, props.referee);
         return Result.ok(fixtureDetails);
     }
 

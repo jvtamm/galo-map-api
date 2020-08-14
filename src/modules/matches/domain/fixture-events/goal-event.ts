@@ -13,7 +13,7 @@ export interface GoalEventProps {
 }
 
 export class GoalEvent implements FixtureEvents {
-    private readonly _type = 'card';
+    private readonly _type = 'goal';
 
     private constructor(
         private _goalType: GoalType,

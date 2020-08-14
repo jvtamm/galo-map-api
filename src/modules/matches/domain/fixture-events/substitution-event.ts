@@ -11,7 +11,7 @@ export interface SubstitutionEventProps {
 }
 
 export class SubstitutionEvent implements FixtureEvents {
-    private readonly _type = 'card';
+    private readonly _type = 'substitution';
 
     private constructor(
         private _inPlayer: Player,
