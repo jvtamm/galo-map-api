@@ -17,7 +17,7 @@ import { Team } from '@modules/matches/domain/team';
 import { TeamDTO } from '@modules/club/mapper/team-map';
 import { UseCase } from '@core/usecase';
 
-import { CreateFixtureDTO, Tournament } from './dto';
+import { CreateFixtureDTO, Tournament, GroundDTO } from './dto';
 import { CreateFixtureErrors } from './errors';
 
 interface Validation<T> {
@@ -46,46 +46,51 @@ export class CreateFixture implements UseCase<CreateFixtureDTO, CreateFixtureRes
 
         const requestValidValues = validatedRequest.value;
 
-        const homeTeamResult = await this.getTeam(requestValidValues.homeTeam, CreateFixtureErrors.HomeTeamNotFound);
-        if (homeTeamResult.failure) return Result.fail(homeTeamResult.error as string);
+        try {
+            const homeTeamResult = await this.getTeam(requestValidValues.homeTeam, CreateFixtureErrors.HomeTeamNotFound);
+            if (homeTeamResult.failure) return Result.fail(homeTeamResult.error as string);
 
-        const awayTeamResult = await this.getTeam(requestValidValues.awayTeam, CreateFixtureErrors.HomeTeamNotFound);
-        if (awayTeamResult.failure) return Result.fail(awayTeamResult.error as string);
+            const awayTeamResult = await this.getTeam(requestValidValues.awayTeam, CreateFixtureErrors.HomeTeamNotFound);
+            if (awayTeamResult.failure) return Result.fail(awayTeamResult.error as string);
 
-        const exists = await this._fixtureRepo.exists(
-            homeTeamResult.value,
-            awayTeamResult.value,
-            new Date(request.matchDate),
-        );
-        if (exists) return Result.fail(CreateFixtureErrors.AlreadyExists);
+            const exists = await this._fixtureRepo.exists(
+                homeTeamResult.value,
+                awayTeamResult.value,
+                new Date(request.matchDate),
+            );
+            if (exists) return Result.fail(CreateFixtureErrors.AlreadyExists);
 
-        const stadiumResult = await this.getStadium(request.ground);
-        if (stadiumResult.failure) return Result.fail(stadiumResult.error as string);
+            const stadiumResult = await this.getStadium(request.ground);
+            if (stadiumResult.failure) return Result.fail(stadiumResult.error as string);
 
-        const leagueEditionResult = await this.resolveLeagueEdition(request.league);
-        if (leagueEditionResult.failure) return Result.fail(CreateFixtureErrors.TournamentNotFound);
+            const leagueEditionResult = await this.resolveLeagueEdition(request.league);
+            if (leagueEditionResult.failure) return Result.fail(CreateFixtureErrors.TournamentNotFound);
 
-        const references = ExternalReferenceFactory.fromDTO(request.externalReferences);
-        if (!references.length) return Result.fail(CreateFixtureErrors.ProviderNotSupported);
+            const references = ExternalReferenceFactory.fromDTO(request.externalReferences);
+            if (!references.length) return Result.fail(CreateFixtureErrors.ProviderNotSupported);
 
-        const props: FixtureProps = {
-            status: FixtureStatusOptions.NotStarted,
-            league: leagueEditionResult.value,
-            round: request.round,
-            homeTeam: homeTeamResult.value,
-            awayTeam: awayTeamResult.value,
-            ground: stadiumResult.value,
-            matchDate: new Date(request.matchDate),
-            refs: references,
-            ...request.referee && { referee: request.referee },
-        };
+            const props: FixtureProps = {
+                status: FixtureStatusOptions.NotStarted,
+                league: leagueEditionResult.value,
+                round: request.round,
+                homeTeam: homeTeamResult.value,
+                awayTeam: awayTeamResult.value,
+                ground: stadiumResult.value,
+                matchDate: new Date(request.matchDate),
+                refs: references,
+                ...request.referee && { referee: request.referee },
+            };
 
-        const fixture = Fixture.create(props);
-        if (fixture.failure) return Result.fail(fixture.error as string);
+            const fixture = Fixture.create(props);
+            if (fixture.failure) return Result.fail(fixture.error as string);
 
-        await this._fixtureRepo.save(fixture.value);
+            await this._fixtureRepo.save(fixture.value);
 
-        return Result.ok(FixtureMap.toDTO(fixture.value));
+            return Result.ok(FixtureMap.toDTO(fixture.value));
+        } catch (e) {
+            console.log(e);
+            return Result.fail(CreateFixtureErrors.UnexpectedError);
+        }
     }
 
     async resolveLeagueEdition({ name, year } : Tournament): Promise<Result<LeagueEdition>> {
@@ -133,11 +138,13 @@ export class CreateFixture implements UseCase<CreateFixtureDTO, CreateFixtureRes
         } as FixtureTeam);
     }
 
-    async getStadium(name: string): Promise<Result<Stadium>> {
+    async getStadium(ground: GroundDTO): Promise<Result<Stadium>> {
+        const { name, city } = ground;
+
         let stadiumResult = await this._groundServices.getStadiumByName({ name });
 
         if (stadiumResult.failure) {
-            stadiumResult = await this._groundServices.create({ name });
+            stadiumResult = await this._groundServices.create({ name, city });
             if (stadiumResult.failure) return Result.fail<Stadium>(CreateFixtureErrors.StadiumNotFound);
         }
 
@@ -157,10 +164,10 @@ export class CreateFixture implements UseCase<CreateFixtureDTO, CreateFixtureRes
                 hasError: ({ league }: CreateFixtureDTO) => (!league || !league.year || !league.name),
                 error: CreateFixtureErrors.LeagueMandatory,
             },
-            round: {
-                hasError: ({ round }: CreateFixtureDTO) => !round,
-                error: CreateFixtureErrors.RoundMandatory,
-            },
+            // round: {
+            //     hasError: ({ round }: CreateFixtureDTO) => !round,
+            //     error: CreateFixtureErrors.RoundMandatory,
+            // },
             ground: {
                 hasError: ({ ground }: CreateFixtureDTO) => !ground,
                 error: CreateFixtureErrors.GroundMandatory,

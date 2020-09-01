@@ -8,9 +8,9 @@ import TeamMap from '@modules/club/mapper/team-map';
 import { CountryEmbedded } from '@modules/club/mapper/country-map';
 import { DatabaseDriver } from '@infra/contracts';
 import { Refs } from '@modules/club/domain/external-references';
+import { Stadium } from '@modules/club/domain/stadium';
 import { TYPES } from '@config/ioc/types';
 import { Team } from '@modules/club/domain/team';
-
 import { TeamRepo } from '@modules/club/repos/team-repo';
 
 export interface TeamCollection {
@@ -23,6 +23,7 @@ export interface TeamCollection {
     founded?: number;
     primaryColor?: string;
     secondaryColor?: string;
+    grounds?: Stadium[];
 }
 
 @injectable()

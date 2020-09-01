@@ -16,6 +16,7 @@ import TYPES from '@config/ioc/types';
 import { ICountryService } from '@modules/location/usecases/country';
 import { IPlayerService } from '@modules/club/usecases/player';
 import { SquadRepo } from '@modules/club/repos/squad-repo';
+import { StadiumService } from '@modules/location/usecases/stadium';
 import { TeamRepo } from '@modules/club/repos/team-repo';
 
 import { AddPlayerToSquad, AddPlayerToSquadDTO, AddPlayerToSquadResponse } from './add-player-to-squad';
@@ -38,13 +39,14 @@ export interface ITeamService {
 
 @injectable()
 export class TeamService implements ITeamService {
-    @inject(TYPES.TeamRepo) private _teamRepo!: TeamRepo;
-
-    @inject(TYPES.SquadRepo) private _squadRepo!: SquadRepo;
-
-    @inject(TYPES.CountryService) private _countryService!: ICountryService;
-
-    @inject(TYPES.PlayerService) private _playerService!: IPlayerService;
+    constructor(
+        @inject(TYPES.TeamRepo) private _teamRepo: TeamRepo,
+        @inject(TYPES.SquadRepo) private _squadRepo: SquadRepo,
+        @inject(TYPES.CountryService) private _countryService: ICountryService,
+        @inject(TYPES.PlayerService) private _playerService: IPlayerService,
+        @inject(TYPES.StadiumService) private _groundService: StadiumService,
+    // eslint-disable-next-line no-empty-function
+    ) {}
 
     addPlayerToSquad(request: AddPlayerToSquadDTO): Promise<AddPlayerToSquadResponse> {
         const createTeam = new AddPlayerToSquad(this._squadRepo, this._playerService);
@@ -53,7 +55,7 @@ export class TeamService implements ITeamService {
     }
 
     create(request: CreateTeamDTO): Promise<CreateTeamResponse> {
-        const createTeam = new CreateTeam(this._teamRepo, this, this._countryService);
+        const createTeam = new CreateTeam(this._teamRepo, this, this._countryService, this._groundService);
 
         return createTeam.execute(request);
     }

@@ -10,4 +10,5 @@ export enum CreateFixtureErrors {
     AwayTeamNotFound = 'Away team with references supplied was not found.', // Deprecate when team is created when it doesn't exist
     StadiumNotFound = 'Stadium with name/nickname supplied was not found.',
     TournamentNotFound = 'Tournament with year and name supplied was not found.',
+    UnexpectedError = 'An unexpected error has occurred'
 }

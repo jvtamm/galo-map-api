@@ -34,9 +34,11 @@ export class AddLeagueEdition implements UseCase<AddLeagueEditionDTO, AddLeagueE
             if (exists) return Result.fail(AddLeagueEditionErrors.AlreadyExists);
 
             const season = await this.getSeason(request.season);
+            console.log(season);
             if (season.failure) return Result.fail(season.error as string);
 
             const league = await this.getLeague(request.league);
+            console.log(league);
             if (league.failure) return Result.fail(season.error as string);
 
             const leagueEditionProps: LeagueEditionProps = {
@@ -64,7 +66,7 @@ export class AddLeagueEdition implements UseCase<AddLeagueEditionDTO, AddLeagueE
         let season: SeasonDTO;
         if (seasonResult.failure) {
             const seasonCreationResult = await this._seasonService.create({ year });
-            if (seasonResult.failure) return Result.fail(seasonResult.error as string);
+            if (seasonCreationResult.failure) return Result.fail(seasonResult.error as string);
 
             season = seasonCreationResult.value;
         } else {

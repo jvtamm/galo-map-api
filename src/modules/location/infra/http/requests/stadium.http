@@ -2,5 +2,5 @@ POST http://localhost:3000/stadium
 Content-Type: application/json
 
 {
-    "name": "Parque do sabiá"
+    "name": "Sebastião César"
 }

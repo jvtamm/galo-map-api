@@ -8,7 +8,7 @@ POST http://localhost:3000/country/
 Content-Type: application/json
 
 {
-    "name": "Brasil",
-    "alpha2": "BR",
-    "alpha3": "BRA"
+    "name": "Bulgária",
+    "alpha2": "BG",
+    "alpha3": "BGR"
 }

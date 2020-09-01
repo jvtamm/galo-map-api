@@ -1,12 +1,13 @@
 import Entity from '@core/entity';
 import Identifier from '@core/identifier';
+import Maybe from '@core/maybe';
 import { Either, left, right } from '@core/either';
 import { Guard } from '@core/guard';
 
-import Maybe from '@core/maybe';
+import { Country } from './country';
 import { ExternalReference, Refs } from './external-references';
 import { HexColor } from './hex-color';
-import { Country } from './country';
+import { Stadium } from './stadium';
 
 export interface TeamProps {
     name: string;
@@ -17,7 +18,7 @@ export interface TeamProps {
     founded?: number;
     primaryColor?: HexColor;
     secondaryColor?: HexColor;
-    // stadium?: Stadium[]
+    grounds?: Stadium[]
 }
 
 export class Team extends Entity<TeamProps, string | number> {
@@ -89,6 +90,10 @@ export class Team extends Entity<TeamProps, string | number> {
 
     getSecondaryColor(): Maybe<HexColor> {
         return Maybe.fromUndefined<HexColor>(this.props.secondaryColor);
+    }
+
+    getGrounds(): Stadium[] {
+        return this.props.grounds || [] as Stadium[];
     }
 
     getRefs(): Maybe<Refs[]> {

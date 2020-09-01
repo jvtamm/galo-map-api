@@ -26,7 +26,7 @@ export type FixtureStatus = FixtureStatusOptions.NotStarted | FixtureStatusOptio
 
 export interface FixtureProps {
     league: LeagueEdition;
-    round: string;
+    round?: string;
     homeTeam: FixtureTeam;
     awayTeam: FixtureTeam;
     status: FixtureStatus;
@@ -44,7 +44,7 @@ export class Fixture extends Entity<FixtureProps, string> {
 
     static create(props: FixtureProps, id?: Identifier<string>): Result<Fixture> {
         const guardedProps = [
-            { argument: props.round, argumentName: 'round' },
+            // { argument: props.round, argumentName: 'round' },
             { argument: props.ground, argumentName: 'ground' },
             { argument: props.league, argumentName: 'league' },
             { argument: props.status, argumentName: 'status' },
@@ -88,7 +88,7 @@ export class Fixture extends Entity<FixtureProps, string> {
     }
 
     get round(): string {
-        return this.props.round;
+        return this.props.round || '';
     }
 
     get homeTeam(): FixtureTeam {

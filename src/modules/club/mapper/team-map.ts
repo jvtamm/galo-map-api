@@ -39,6 +39,7 @@ class TeamMap implements Mapper<Team> {
             ...raw.founded && { founded: raw.founded },
             ...maybePrimaryColor && { primaryColor: maybePrimaryColor },
             ...maybeSecondaryColor && { secondaryColor: maybeSecondaryColor },
+            ...raw.grounds && { grounds: raw.grounds },
         } as TeamProps;
 
         const team = Team.create(props, _id);
@@ -69,6 +70,7 @@ class TeamMap implements Mapper<Team> {
             name: team.getName(),
             country: CountryMap.toPersistance(team.getCountry()),
             externalReferences: team.getRefs().fold([] as Refs[])((value) => value as Refs[]),
+            ...team.getGrounds().length && { grounds: team.getGrounds() },
             ...maybeId && { _id: maybeId },
             ...abbreviation && { abbreviation },
             ...displayName && { displayName },
@@ -86,6 +88,7 @@ class TeamMap implements Mapper<Team> {
             abbreviation: team.getAbbreviation().fold<string>('')((value) => value as string),
             displayName: team.getDisplayName().fold<string>(name)((value) => value as string),
             country: team.getCountry(),
+            grounds: team.getGrounds(),
             id: team.getId().fold<string>('')((value) => value as string),
             founded: team.getFounded().fold<number | null>(null)((value) => value as number),
             primaryColor: team.getPrimaryColor().fold<string>('')((color) => color?.value as string),

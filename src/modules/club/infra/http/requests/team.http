@@ -2,13 +2,19 @@ POST http://localhost:3000/team
 Content-Type: application/json
 
 {
-    "name": "Clube Atlético Mineiro",
-    "country": "5f1889477a626a019310a355",
-    "displayName": "Atlético",
+    "name": "ABC Futebol Clube",
+    "abbreviation": "ABC",
+    "displayName": "ABC-RN",
+    "country": "Brasil",
+    "grounds": [
+        "Frasqueirão"
+    ],
     "externalReferences": {
-        "galodigital": "Atlético"
+        "galodigital": "ABC-RN"
     },
-    "founded": 1908
+    "founded": 1915,
+    "primaryColor": "#000000",
+    "secondaryColor": "#FFFFFF"
 }
 
 ######

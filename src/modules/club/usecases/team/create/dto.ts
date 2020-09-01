@@ -6,6 +6,7 @@ export interface CreateTeamDTO {
     displayName?: string;
     country: string;
     externalReferences: RefDTO;
+    grounds?: string[];
     founded?: number;
     primaryColor?: string;
     secondaryColor?: string;

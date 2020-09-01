@@ -1,5 +1,6 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
+import url from 'url';
 import { injectable } from 'inversify';
 
 import Maybe from '@core/maybe';
@@ -10,62 +11,46 @@ interface Map<T> {
     [key: string]: T
 }
 
-function parseDmsValues(dms: string) {
-    const separatorMap: Map<string> = {
-        degrees: '°',
-        minutes: '\'',
-        seconds: '"',
-    };
-
-    const output: Map<number | string> = {};
-
-    let rest = dms;
-    Object.keys(separatorMap).forEach((key) => {
-        const separator = separatorMap[key];
-
-        const [value, remainder] = rest.split(separator);
-
-        rest = remainder;
-        output[key] = parseInt(value, 10);
-    });
-
-    rest = rest.trim();
-    output.position = rest;
-
-    return output;
-}
-
-function convertDmsToDecimal(dms: string) {
+function convertDmsToDecimal(dms: any) {
     const MINUTES_IN_HOUR = 60;
     const SECONDS_IN_HOUR = 3600;
     const HOURS_IN_DEGREE = 1;
 
     const {
         degrees, minutes, seconds, position,
-    } = parseDmsValues(dms);
+    } = dms;
 
     const decimal = (degrees as number / HOURS_IN_DEGREE) + (minutes as number / MINUTES_IN_HOUR) + (seconds as number / SECONDS_IN_HOUR);
 
     return (position === 'N' || position === 'E') ? decimal : -1 * decimal;
 }
 
-function convertDmsToDecimalCoords(dms: string) {
-    if (!dms) return undefined;
-
-    const numberOrDecimal = '(\\d+\\.{0,1}\\d*)';
-    const spaces = '\\s*';
-
-    const latDmsRegex = new RegExp(`${numberOrDecimal}°${spaces}${numberOrDecimal}'${spaces}${numberOrDecimal}"${spaces}(S|N)`, 'gm');
-    const lngDmsRegex = new RegExp(`${numberOrDecimal}°${spaces}${numberOrDecimal}'${spaces}${numberOrDecimal}"${spaces}(E|L|W|O)`, 'gm');
-
-    const latDms = dms.match(latDmsRegex);
-    const lngDms = dms.match(lngDmsRegex);
-
-    if (!latDms || !lngDms) return undefined;
+function formatDms(strCoords: string) {
+    const [degrees, minutes, seconds, position] = strCoords.split('_');
 
     return {
-        latitude: convertDmsToDecimal(latDms[0].replace(/ /g, '')),
-        longitude: convertDmsToDecimal(lngDms[0].replace(/ /g, '')),
+        degrees: parseFloat(degrees),
+        minutes: parseFloat(minutes),
+        seconds: parseFloat(seconds),
+        position,
+    };
+}
+
+function parseCoords(address: string) {
+    if (!address) return undefined;
+
+    const parsedUrl = url.parse(address, true);
+    const { params } = parsedUrl.query;
+    const coordsInfo = (params as string)?.split(/(?<=[W|E])/)[0];
+
+    const [strLatCoords, strLngCoords] = coordsInfo.split(/(?<=[S|N])_/);
+
+    const latCoords = formatDms(strLatCoords);
+    const lngCoords = formatDms(strLngCoords);
+
+    return {
+        latitude: convertDmsToDecimal(latCoords),
+        longitude: convertDmsToDecimal(lngCoords),
     };
 }
 
@@ -76,36 +61,44 @@ export class WikipediaScraper implements StadiumScraper {
     private readonly _httpInstance = axios.create();
 
     private readonly _countryMap: Map<string> = {
-        'África do Sul': 'ZAF',
-        Alemanha: 'DEU',
-        Argentina: 'ARG',
-        Bélgica: 'BEL',
-        Bolívia: 'BOL',
-        Brasil: 'BRA',
-        Canada: 'CAN',
-        Catar: 'QAT',
-        Chile: 'CHL',
-        China: 'CHN',
-        Colômbia: 'COL',
-        Equador: 'ECU',
-        'Emirados Árabes Unidos': 'ARE',
-        Espanha: 'ESP',
-        'Estados Unidos': 'USA',
-        França: 'FRA',
-        Inglaterra: 'GBR',
-        Itália: 'ITA',
-        Japão: 'JPN',
-        Marrocos: 'MAR',
-        México: 'MEX',
-        Paraguai: 'PRY',
-        Peru: 'PER',
-        Portugal: 'PRT',
-        Russia: 'RUS',
-        Suíça: 'CHE',
-        Turquia: 'TUR',
-        Ucrânia: 'UKR',
-        Uruguay: 'URY',
-        Venezuela: 'VEN',
+        'África do Sul': 'ZA',
+        Alemanha: 'DE',
+        Argentina: 'AR',
+        Áustria: 'AT',
+        Bélgica: 'BE',
+        Bolívia: 'BO',
+        Bulgária: 'BG',
+        Brasil: 'BR',
+        Canada: 'CA',
+        Catar: 'QA',
+        Chile: 'CL',
+        China: 'CN',
+        Croácia: 'HR',
+        Colômbia: 'CO',
+        Equador: 'EC',
+        'Emirados Árabes Unidos': 'AE',
+        Escócia: 'EA',
+        Espanha: 'ES',
+        'Estados Unidos': 'US',
+        França: 'FR',
+        Holanda: 'NL',
+        Inglaterra: 'GB',
+        Itália: 'IT',
+        Japão: 'JP',
+        Luxemburgo: 'LU',
+        Marrocos: 'MA',
+        México: 'MX',
+        'Nova Zelândia': 'NZ',
+        'Países Baixos': 'NL',
+        Paraguai: 'PY',
+        Peru: 'PE',
+        Portugal: 'PT',
+        Russia: 'RU',
+        Suíça: 'CH',
+        Turquia: 'TR',
+        Ucrânia: 'UA',
+        Uruguay: 'UY',
+        Venezuela: 'VE',
     }
 
     async getStadiumInfo(name: string): Promise<Result<StadiumInfo>> {
@@ -160,17 +153,20 @@ export class WikipediaScraper implements StadiumScraper {
         return Maybe.none<string>();
     }
 
-    async scrapeStadium(url: string): Promise<StadiumInfo> {
-        const page = await this._httpInstance.get(url);
+    async scrapeStadium(address: string): Promise<StadiumInfo> {
+        const page = await this._httpInstance.get(address);
         const $ = cheerio.load(page.data);
 
-        const infoBox = $('table.infobox_v2');
+        const infoBox = $('.infobox_v2');
 
         const name = infoBox.find('td:contains("Nome")').next().text();
         const possibleNickname = infoBox.find('td:contains("Apelido")').next('td').children().html();
         const capacity = infoBox.find('td:contains("Capacidade")').next().text();
-        const country = infoBox.find('td:contains("Local")').next().text();
-        const coords = $('a.external.text[href*=geohack]').text();
+        const country = this.getCountry(infoBox, $);
+        const coordsHref = $('a.external.text[href*=geohack]').attr('href') as string;
+        const maybeCoords = $('a.mw-kartographer-maplink');
+
+        const coords = this.getCoordinates(coordsHref, maybeCoords);
 
         const topNicknameContainer = infoBox.find('.topo');
         const nicknameBr = topNicknameContainer.find('br');
@@ -187,11 +183,11 @@ export class WikipediaScraper implements StadiumScraper {
         nickname = nickname?.includes(' ou ') ? nickname.split(' ou ')[0] : nickname;
 
         return {
-            name: name.trim(),
+            name: name.trim() || nickname?.trim() as string,
             nickname: nickname?.trim(),
             ...this.cleanCapacity(capacity) && { capacity: this.cleanCapacity(capacity) },
-            ...this.formatCountry(country) && { country: this.formatCountry(country) },
-            ...convertDmsToDecimalCoords(coords) && { coordinates: convertDmsToDecimalCoords(coords) },
+            ...this.formatCountry(country, $) && { country: this.formatCountry(country, $) },
+            ...coords && { coordinates: coords },
         };
     }
 
@@ -213,12 +209,46 @@ export class WikipediaScraper implements StadiumScraper {
         return undefined;
     }
 
-    formatCountry(country: string) {
+    // eslint-disable-next-line class-methods-use-this
+    getCountry(content: any, $: any) {
+        const locale = content.find('td:contains("Local")').next();
+        if (locale && locale.text()) return locale;
+
+        let addressNode: any;
+        content.find('th').each((_: any, e: any) => {
+            const node = $(e);
+
+            if (node.text() === 'Endereço') {
+                addressNode = node;
+            }
+        });
+
+        return addressNode ? addressNode.next() : null;
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    getCoordinates(href: string, maybeCoords: any) {
+        if (href) return parseCoords(href);
+
+        if (maybeCoords.get()) {
+            return {
+                latitude: parseFloat(maybeCoords.attr('data-lat')),
+                longitude: parseFloat(maybeCoords.attr('data-lon')),
+            };
+        }
+
+        return undefined;
+    }
+
+    formatCountry(country: any, $:any) {
         if (!country) return undefined;
 
-        const splitted = country.split(',');
-        const countryName = (splitted && splitted.length) ? splitted[splitted.length - 1].trim() : null;
-        if (countryName && countryName in this._countryMap) {
+        const anchors = country.find('a');
+
+        if (anchors && anchors.length) {
+            const countryAnchor = anchors[anchors.length - 1];
+            const countryName = $(countryAnchor).text().trim();
+
             return this._countryMap[countryName];
         }
 

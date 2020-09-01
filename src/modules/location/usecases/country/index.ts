@@ -6,11 +6,13 @@ import { CountryRepo } from '@modules/location/repos/country-repo';
 import { CreateCountry, CreateCountryDTO, CreateCountryResponse } from './create';
 import { GetById, GetCountryByIdDTO, GetCountryByIdResponse } from './get-by-id';
 import { GetCountryByCodeDTO, GetCountryByCodeResponse, GetCountryByCode } from './get-by-code';
+import { GetCountryByNameDTO, GetCountryByNameResponse, GetCountryByName } from './get-by-name';
 
 export interface ICountryService {
     create(request: CreateCountryDTO): Promise<CreateCountryResponse>;
     getByCode(request: GetCountryByCodeDTO): Promise<GetCountryByCodeResponse>;
     getById(request: GetCountryByIdDTO): Promise<GetCountryByIdResponse>;
+    getByName(request: GetCountryByNameDTO): Promise<GetCountryByNameResponse>;
 }
 
 @injectable()
@@ -33,5 +35,11 @@ export class CountryService implements ICountryService {
         const getByIdUseCase = new GetById(this._countryRepo);
 
         return getByIdUseCase.execute(request);
+    }
+
+    getByName(request: GetCountryByNameDTO): Promise<GetCountryByNameResponse> {
+        const getByNameUseCase = new GetCountryByName(this._countryRepo);
+
+        return getByNameUseCase.execute(request);
     }
 }
