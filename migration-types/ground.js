@@ -5,7 +5,7 @@ const Ground = {
     required: ['name', 'nickname', 'geometry'],
     properties: {
         name: { bsonType: 'string' },
-        year: { bsonType: 'int' },
+        nickname: { bsonType: 'string' },
         geometry: Point,
     },
 };

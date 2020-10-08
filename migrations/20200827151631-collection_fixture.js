@@ -9,7 +9,10 @@ module.exports = {
             validator: {
                 $jsonSchema: {
                     bsonType: 'object',
-                    required: ['name', 'leagueEdition', 'status', '_creationDate', '_lastUpdateDate'],
+                    required: [
+                        'leagueEdition', 'round', 'matchDate', 'externalReferences',
+                        'homeTeam', 'awayTeam', 'ground', 'status', '_creationDate', '_lastUpdateDate',
+                    ],
                     properties: {
                         leagueEdition: LeagueEdition,
                         round: { bsonType: 'string' },
@@ -25,7 +28,7 @@ module.exports = {
                             required: ['team', 'score'],
                             properties: {
                                 team: Team,
-                                score: { bsonType: 'int' },
+                                score: { bsonType: 'number' },
                             },
                         },
                         awayTeam: {
@@ -33,7 +36,7 @@ module.exports = {
                             required: ['team', 'score'],
                             properties: {
                                 team: Team,
-                                score: { bsonType: 'int' },
+                                score: { bsonType: 'number' },
                             },
                         },
                         status: {

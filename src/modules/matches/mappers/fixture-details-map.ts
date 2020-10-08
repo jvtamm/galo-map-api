@@ -11,6 +11,7 @@ export interface FixtureDetailsDTO {
     homePlayers: SummonedPlayers;
     awayPlayers: SummonedPlayers;
     attendance?: number;
+    referee?: string;
 }
 
 export const FixtureDetailsMap: StaticMapper<FixtureDetails, FixtureDetailsCollection> = {
@@ -22,6 +23,7 @@ export const FixtureDetailsMap: StaticMapper<FixtureDetails, FixtureDetailsColle
             homePlayers: raw.homePlayers as SummonedPlayers,
             awayPlayers: raw.homePlayers as SummonedPlayers,
             ...raw.attendance && { attendance: raw.attendance },
+            ...raw.referee && { referee: raw.referee },
         };
 
         const fixtureDetails = FixtureDetails.create(props);
@@ -34,6 +36,9 @@ export const FixtureDetailsMap: StaticMapper<FixtureDetails, FixtureDetailsColle
         const maybeAttendance = fixtureDetails.attendance
             .fold<number | undefined>(undefined)((value) => value as number);
 
+        const maybeReferee = fixtureDetails.referee
+            .fold<string | undefined>(undefined)((value) => value as string);
+
         return {
             _id,
             events: fixtureDetails.events.map((event) => ({
@@ -43,6 +48,7 @@ export const FixtureDetailsMap: StaticMapper<FixtureDetails, FixtureDetailsColle
             })),
             homePlayers: fixtureDetails.homePlayers,
             awayPlayers: fixtureDetails.awayPlayers,
+            ...maybeReferee && { referee: maybeReferee },
             ...maybeAttendance && { attendance: maybeAttendance },
         };
     },
@@ -56,6 +62,7 @@ export const FixtureDetailsMap: StaticMapper<FixtureDetails, FixtureDetailsColle
         })),
         awayPlayers: fixtureDetails.awayPlayers,
         homePlayers: fixtureDetails.homePlayers,
+        referee: fixtureDetails.referee.fold<null | string>(null)((value) => value as string),
         attendance: fixtureDetails.attendance.fold<null | number>(null)((value) => value as number),
     }),
 };

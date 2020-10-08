@@ -1,6 +1,10 @@
 import { Route } from '@infra/http/express/types';
 
-import { CreateCountryController, GetCountryByIdController, GetContractsByPeriodController } from '../controllers/country';
+import {
+    CreateCountryController,
+    GetCountryByIdController,
+    GetCountryByQueryController,
+} from '../controllers/country';
 
 const BASE_MODULE_PATH = '/country';
 
@@ -10,10 +14,10 @@ const createCountry: Route = {
     handler: (req, res) => (new CreateCountryController()).execute(req, res),
 };
 
-const getCountryByCode: Route = {
+const getCountryByQuery: Route = {
     path: BASE_MODULE_PATH,
     method: 'get',
-    handler: (req, res) => (new GetContractsByPeriodController()).execute(req, res),
+    handler: (req, res) => (new GetCountryByQueryController()).execute(req, res),
 };
 
 const getCountryById: Route = {
@@ -24,6 +28,6 @@ const getCountryById: Route = {
 
 export default [
     createCountry,
-    getCountryByCode,
+    getCountryByQuery,
     getCountryById,
 ];

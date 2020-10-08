@@ -1,14 +1,14 @@
-GET http://localhost:3000/country?code=BR
+GET http://localhost:3000/country?name=Brasil&code=EUA
 
 ######
-GET http://localhost:3000/country/5f00c0f29f9b880058e6e362
+GET http://localhost:3000/country/5f1889477a626a019310a355
 
 ######
 POST http://localhost:3000/country/
 Content-Type: application/json
 
 {
-    "name": "Bulgária",
-    "alpha2": "BG",
-    "alpha3": "BGR"
+    "name": "Sérvia",
+    "alpha2": "RS",
+    "alpha3": "SRB"
 }

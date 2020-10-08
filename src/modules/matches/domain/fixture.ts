@@ -125,4 +125,11 @@ export class Fixture extends Entity<FixtureProps, string> {
     get details(): Maybe<FixtureDetails> {
         return Maybe.fromUndefined(this.props.details);
     }
+
+    finishMatch(home: number, away: number, details: FixtureDetails) {
+        this.props.homeTeam.score = home;
+        this.props.awayTeam.score = away;
+        this.props.status = FixtureStatusOptions.MatchFinished;
+        this.props.details = details;
+    }
 }

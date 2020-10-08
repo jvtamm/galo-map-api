@@ -1,6 +1,11 @@
 import { Route } from '@infra/http/express/types';
 
-import { CreatePlayerController, GetPlayerByReferenceController, GetPlayerByIdController } from '@modules/club/infra/http/express/controllers/player';
+import {
+    CreatePlayerController,
+    GetPlayerBulkController,
+    GetPlayerByIdController,
+    GetPlayerByReferenceController,
+} from '@modules/club/infra/http/express/controllers/player';
 
 const BASE_MODULE_PATH = '/player';
 
@@ -23,8 +28,15 @@ const getPlayerByReference: Route = {
     handler: (req, res) => (new GetPlayerByReferenceController()).execute(req, res),
 };
 
+const getPlayerBulk: Route = {
+    path: `${BASE_MODULE_PATH}/list`,
+    method: 'post',
+    handler: (req, res) => (new GetPlayerBulkController()).execute(req, res),
+};
+
 export default [
     createPlayer,
+    getPlayerBulk,
     getPlayerById,
     getPlayerByReference,
 ];

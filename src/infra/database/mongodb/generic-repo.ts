@@ -56,6 +56,7 @@ class GenericMongoRepository<TEntity extends Entity<any, any>, TCollection exten
 
     private async replaceOne(collectionObject: TCollection): Promise<TEntity> {
         const instance = { ...collectionObject };
+        instance._creationDate = new Date();
         instance._lastUpdateDate = new Date();
 
         const { _id } = instance;

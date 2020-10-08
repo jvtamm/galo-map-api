@@ -4,7 +4,7 @@ const LeagueEdition = {
     properties: {
         _id: { bsonType: 'objectId' },
         name: { bsonType: 'string' },
-        year: { bsonType: 'int' },
+        year: { bsonType: 'number' },
     },
 };
 

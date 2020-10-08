@@ -32,3 +32,14 @@ GET http://localhost:3000/team?galodigital=Uberlândia-MG
 
 ######
 GET http://localhost:3000/team/5ef269ddc2b70103fa69df9b/squad
+
+######
+POST http://localhost:3000/team/list
+Content-Type: application/json
+
+{
+    "externalReferences": [
+        { "galodigital": "Atlético" },
+        { "galodigital": "Flamengo-RJ" }
+    ]
+}

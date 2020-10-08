@@ -6,6 +6,6 @@
  */
 export interface Player {
     name: string;
-    jersey: number;
+    jersey?: number;
     id?: string;
 }

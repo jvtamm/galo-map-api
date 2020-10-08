@@ -1,18 +1,19 @@
+import { inject, injectable } from 'inversify';
+import { ObjectId } from 'mongodb';
+
 import GenericMongoRepository, { BaseCollection } from '@infra/database/mongodb/generic-repo';
 import Maybe from '@core/maybe';
 import TYPES from '@config/ioc/types';
 import { DatabaseDriver } from '@infra/contracts';
 import { EmbeddedLeagueEdition } from '@modules/matches/mappers/league-edition-map';
 import { EmbeddedStadium } from '@modules/matches/mappers/stadium-map';
+import { ExternalReference, Refs } from '@modules/club/domain/external-references';
 import { Fixture, FixtureTeam, FixtureStatus } from '@modules/matches/domain/fixture';
+import { FixtureDetails } from '@modules/matches/domain/fixture-details';
 import { FixtureDetailsRepo } from '@modules/matches/repos/fixture-details-repo';
 import { FixtureMap } from '@modules/matches/mappers/fixture-map';
 import { FixtureRepo, FixtureFilters } from '@modules/matches/repos/fixture-repo';
-import { ObjectId } from 'mongodb';
-import { Refs } from '@modules/club/domain/external-references';
 import { TeamCollection } from '@modules/matches/mappers/team-map';
-import { inject, injectable } from 'inversify';
-import { FixtureDetails } from '@modules/matches/domain/fixture-details';
 
 interface EmbeddedFixtureTeam {
     team: TeamCollection;
@@ -130,7 +131,7 @@ export class MongoFixtureRepo extends GenericMongoRepository<Fixture, FixtureCol
     async search(filters: FixtureFilters): Promise<Fixture[]> {
         const query = this.createFilterQuery(filters);
 
-        const fixtures = await this.collection.find(query).toArray();
+        const fixtures = await this.collection.find(query).sort({ matchDate: 1 }).toArray();
 
         const result: Fixture[] = [];
         for (let i = 0; i < fixtures.length; i += 1) {
@@ -141,5 +142,20 @@ export class MongoFixtureRepo extends GenericMongoRepository<Fixture, FixtureCol
         }
 
         return result;
+    }
+
+    async getByReference(refs: ExternalReference[]): Promise<Maybe<Fixture>> {
+        const orExpressions = refs.map((ref) => ({
+            'externalReferences.ref': ref.serialize(),
+            'externalReferences.provider': ref.getProvider(),
+        }));
+
+        const fixture = await this.collection.findOne({ $or: orExpressions });
+        if (!fixture) return Maybe.none();
+
+        const maybeDetails = await this._fixtureDetailsRepo.getByMatchId(fixture._id);
+        fixture.details = maybeDetails.fold<undefined | FixtureDetails>(undefined)((value) => value as FixtureDetails);
+
+        return Maybe.fromNull(fixture).map(this.loadDependencies).map(this.mapper.toDomain);
     }
 }

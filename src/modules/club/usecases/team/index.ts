@@ -26,11 +26,13 @@ import { GetTeamById, GetTeamByIdDTO, GetTeamByIdResponse } from './get-by-id';
 import { GetTeamByReference, GetTeamByReferenceDTO, GetTeamByReferenceResponse } from './get-by-reference';
 import { RemovePlayerFromSquad, RemovePlayerFromSquadDTO, RemovePlayerFromSquadResponse } from './remove-player-from-squad';
 import { RetreiveSquad, RetreiveSquadDTO, RetreiveSquadResponse } from './retreive-squad';
+import { GetTeamBulkDTO, GetTeamBulkResponse, GetTeamBulk } from './get-bulk';
 
 export interface ITeamService {
     addPlayerToSquad(request: AddPlayerToSquadDTO): Promise<AddPlayerToSquadResponse>
     create(request: CreateTeamDTO): Promise<CreateTeamResponse>;
     createSquad(request: CreateSquadDTO): Promise<CreateSquadResponse>;
+    getBulk(request: GetTeamBulkDTO): Promise<GetTeamBulkResponse>;
     getById(request: GetTeamByIdDTO): Promise<GetTeamByIdResponse>;
     getByReference(request: GetTeamByReferenceDTO): Promise<GetTeamByReferenceResponse>;
     removePlayerFromSquad(request: RemovePlayerFromSquadDTO): Promise<RemovePlayerFromSquadResponse>;
@@ -64,6 +66,12 @@ export class TeamService implements ITeamService {
         const createSquad = new CreateSquad(this._squadRepo, this);
 
         return createSquad.execute(request);
+    }
+
+    getBulk(request: GetTeamBulkDTO): Promise<GetTeamBulkResponse> {
+        const getBulk = new GetTeamBulk(this._teamRepo);
+
+        return getBulk.execute(request);
     }
 
     getById(request: GetTeamByIdDTO): Promise<GetTeamByReferenceResponse> {

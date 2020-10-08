@@ -33,12 +33,20 @@ export class CreatePlayer implements UseCase<CreatePlayerDTO, CreatePlayerRespon
         const { externalReferences } = request;
 
         const eitherRefs = await this.checkRefExistance(externalReferences);
-        const eitherCountry = await this._countryServices.getById({ id: request.nationality });
+        const countryResult = await this._countryServices.getByName({ name: request.nationality });
+
+        if (countryResult.failure) {
+            return left(CreatePlayerErrors.CountryNotFound);
+        }
+
+        const country: Country = {
+            id: countryResult.value.id as string,
+            code: countryResult.value.code,
+            name: countryResult.value.name,
+        };
 
         const eitherPlayer = eitherRefs.chain(
-            () => eitherCountry.map((country: Country) => country),
-        ).chain(
-            (country: Country) => this.initProps(request, country),
+            () => this.initProps(request, country),
         ).chain<PlayerProps>((props: PlayerProps) => (
             this.validRefs(props.refs)
                 ? right<string, PlayerProps>(props)

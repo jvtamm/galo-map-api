@@ -2,7 +2,7 @@ import { Route } from '@infra/http/express/types';
 
 import {
     AddPlayerToSquadController, CreateTeamController, GetTeamByReferenceController,
-    GetTeamByIdController, RetreiveSquadController,
+    GetTeamByIdController, RetreiveSquadController, GetTeamBulkController,
 } from '../controllers/team';
 
 const BASE_MODULE_PATH = '/team';
@@ -39,10 +39,17 @@ const retreiveSquad: Route = {
     handler: (req, res) => (new RetreiveSquadController()).execute(req, res),
 };
 
+const getTeamBulk: Route = {
+    path: `${BASE_MODULE_PATH}/list`,
+    method: 'post',
+    handler: (req, res) => (new GetTeamBulkController()).execute(req, res),
+};
+
 export default [
     addPlayerToTeam,
     createTeam,
     getTeamById,
     getTeamByReference,
     retreiveSquad,
+    getTeamBulk,
 ];

@@ -15,6 +15,7 @@ import { FixtureDetailsRepo } from '../fixture-details-repo';
 export interface FixtureDetailsCollection extends BaseCollection {
     events: EventOptions[];
     attendance?: number;
+    referee?: string;
     homePlayers: SummonedPlayers;
     awayPlayers: SummonedPlayers;
 }
@@ -35,7 +36,8 @@ export class MongoFixtureDetailsRepo implements FixtureDetailsRepo {
     }
 
     async exists(matchId: string): Promise<Boolean> {
-        const details = this._collection.findOne({ _id: matchId });
+        const _id = new ObjectId(matchId);
+        const details = await this._collection.findOne({ _id });
 
         return Maybe.fromNull(details).isSome();
     }
@@ -50,7 +52,7 @@ export class MongoFixtureDetailsRepo implements FixtureDetailsRepo {
         const persistance = this._mapper.toPersistance(entity);
         persistance._id = new ObjectId(matchId);
 
-        if (this.exists(matchId)) {
+        if (await this.exists(matchId)) {
             return this.replaceOne(persistance);
         }
 
@@ -64,7 +66,7 @@ export class MongoFixtureDetailsRepo implements FixtureDetailsRepo {
 
         const result = await this._collection.insertOne(instance);
 
-        return this._mapper.toDomain(result);
+        return this._mapper.toDomain(result?.ops[0]);
     }
 
     private async replaceOne(collectionObject: FixtureDetailsCollection): Promise<FixtureDetails> {
@@ -75,6 +77,6 @@ export class MongoFixtureDetailsRepo implements FixtureDetailsRepo {
 
         const result = await this._collection.replaceOne({ _id }, instance);
 
-        return this._mapper.toDomain(result);
+        return this._mapper.toDomain(result?.ops[0]);
     }
 }

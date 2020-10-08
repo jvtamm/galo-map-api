@@ -1,23 +1,541 @@
+POST http://localhost:3000/fixture/details
+Content-Type: application/json
+
+{
+    "fixture": {
+        "galodigital": "201932PRO_Atlético_2_x_1_Flamengo-RJ"
+    },
+    "events": [
+        {
+            "type": "substitution",
+            "data": {
+                "inPlayer": {
+                    "displayName": "Leonardo Silva",
+                    "reference": {
+                        "galodigital": "Leonardo_Fabiano_da_Silva_e_Silva"
+                    },
+                    "jersey": 3
+                },
+                "outPlayer": {
+                    "displayName": "Réver",
+                    "reference": {
+                        "galodigital": "Réver_Humberto_Alves_Araújo"
+                    },
+                    "jersey": 4
+                },
+                "team": {
+                    "galodigital": "Atlético"
+                }
+            }
+        },
+        {
+            "type": "substitution",
+            "data": {
+                "inPlayer": {
+                    "displayName": "Vitinho",
+                    "jersey": 11
+                },
+                "outPlayer": {
+                    "displayName": "Léo Duarte",
+                    "jersey": 43
+                },
+                "team": {
+                    "galodigital": "Flamengo-RJ"
+                }
+            }
+        },
+        {
+            "type": "substitution",
+            "data": {
+                "inPlayer": {
+                    "displayName": "Vinícius",
+                    "reference": {
+                        "galodigital": "Vinícius_Goes_Barbosa_de_Souza"
+                    },
+                    "jersey": 29
+                },
+                "outPlayer": {
+                    "displayName": "Cazares",
+                    "reference": {
+                        "galodigital": "Juan_Ramón_Cazares_Sevillano"
+                    },
+                    "jersey": 10
+                },
+                "team": {
+                    "galodigital": "Atlético"
+                }
+            }
+        },
+        {
+            "type": "substitution",
+            "data": {
+                "inPlayer": {
+                    "displayName": "Lincoln",
+                    "jersey": 29
+                },
+                "outPlayer": {
+                    "displayName": "De Arrascaeta",
+                    "jersey": 14
+                },
+                "team": {
+                    "galodigital": "Flamengo-RJ"
+                }
+            }
+        },
+        {
+            "type": "substitution",
+            "data": {
+                "inPlayer": {
+                    "displayName": "Adílson",
+                    "reference": {
+                        "galodigital": "Adílson_Warken"
+                    },
+                    "jersey": 21
+                },
+                "outPlayer": {
+                    "displayName": "Ricardo Oliveira",
+                    "reference": {
+                        "galodigital": "Ricardo_de_Oliveira"
+                    },
+                    "jersey": 9
+                },
+                "team": {
+                    "galodigital": "Atlético"
+                }
+            }
+        },
+        {
+            "type": "substitution",
+            "data": {
+                "inPlayer": {
+                    "displayName": "Berrio",
+                    "jersey": 28
+                },
+                "outPlayer": {
+                    "displayName": "Gabigol",
+                    "jersey": 9
+                },
+                "team": {
+                    "galodigital": "Flamengo-RJ"
+                }
+            }
+        },
+        {
+            "type": "goal",
+            "data": {
+                "player": {
+                    "name": "Cazares",
+                    "reference": {
+                        "galodigital": "Juan_Ramón_Cazares_Sevillano"
+                    }
+                },
+                "goalType": "GOAL",
+                "team": {
+                    "galodigital": "Atlético"
+                }
+            },
+            "timestamp": 28
+        },
+        {
+            "type": "goal",
+            "data": {
+                "player": {
+                    "name": "Chará",
+                    "reference": {
+                        "galodigital": "Yimmi_Javier_Chará_Zamora"
+                    }
+                },
+                "goalType": "GOAL",
+                "team": {
+                    "galodigital": "Atlético"
+                }
+            },
+            "timestamp": 46
+        },
+        {
+            "type": "goal",
+            "data": {
+                "player": {
+                    "name": "Bruno Henrique"
+                },
+                "goalType": "GOAL",
+                "team": {
+                    "galodigital": "Flamengo-RJ"
+                }
+            },
+            "timestamp": 30
+        },
+        {
+            "type": "card",
+            "data": {
+                "player": {
+                    "name": "Victor",
+                    "reference": {
+                        "galodigital": "Victor_Leandro_Bagy"
+                    }
+                },
+                "color": "YELLOW",
+                "team": {
+                    "galodigital": "Atlético"
+                }
+            },
+            "timestamp": 66
+        },
+        {
+            "type": "card",
+            "data": {
+                "player": {
+                    "name": "Luan",
+                    "reference": {
+                        "galodigital": "Luan_Madson_Gedeão_de_Paiva"
+                    }
+                },
+                "color": "YELLOW",
+                "team": {
+                    "galodigital": "Atlético"
+                }
+            },
+            "timestamp": 88
+        },
+        {
+            "type": "card",
+            "data": {
+                "player": {
+                    "name": "Leonardo Silva",
+                    "reference": {
+                        "galodigital": "Leonardo_Fabiano_da_Silva_e_Silva"
+                    }
+                },
+                "color": "YELLOW",
+                "team": {
+                    "galodigital": "Atlético"
+                }
+            },
+            "timestamp": 94
+        },
+        {
+            "type": "card",
+            "data": {
+                "player": {
+                    "name": "Hugo Moura"
+                },
+                "color": "YELLOW",
+                "team": {
+                    "galodigital": "Flamengo-RJ"
+                }
+            },
+            "timestamp": 32
+        },
+        {
+            "type": "card",
+            "data": {
+                "player": {
+                    "name": "Elias",
+                    "reference": {
+                        "galodigital": "Elias_Mendes_Trindade"
+                    }
+                },
+                "color": "RED",
+                "team": {
+                    "galodigital": "Atlético"
+                }
+            },
+            "timestamp": 46
+        }
+    ],
+    "home": 2,
+    "away": 1,
+    "homePlayers": {
+        "lineup": [
+            {
+                "displayName": "Victor",
+                "reference": {
+                    "galodigital": "Victor_Leandro_Bagy"
+                },
+                "jersey": 1
+            },
+            {
+                "displayName": "Guga",
+                "reference": {
+                    "galodigital": "Cláudio_Rodrigues_Gomes"
+                },
+                "jersey": 98
+            },
+            {
+                "displayName": "Réver",
+                "reference": {
+                    "galodigital": "Réver_Humberto_Alves_Araújo"
+                },
+                "jersey": 4
+            },
+            {
+                "displayName": "Igor Rabello",
+                "reference": {
+                    "galodigital": "Igor_Rabello_da_Costa"
+                },
+                "jersey": 16
+            },
+            {
+                "displayName": "Patric",
+                "reference": {
+                    "galodigital": "Patric_Cabral_Lalau"
+                },
+                "jersey": 2
+            },
+            {
+                "displayName": "José Welison",
+                "reference": {
+                    "galodigital": "José_Welison_da_Silva"
+                },
+                "jersey": 14
+            },
+            {
+                "displayName": "Elias",
+                "reference": {
+                    "galodigital": "Elias_Mendes_Trindade"
+                },
+                "jersey": 7
+            },
+            {
+                "displayName": "Luan",
+                "reference": {
+                    "galodigital": "Luan_Madson_Gedeão_de_Paiva"
+                },
+                "jersey": 27
+            },
+            {
+                "displayName": "Cazares",
+                "reference": {
+                    "galodigital": "Juan_Ramón_Cazares_Sevillano"
+                },
+                "jersey": 10
+            },
+            {
+                "displayName": "Chará",
+                "reference": {
+                    "galodigital": "Yimmi_Javier_Chará_Zamora"
+                },
+                "jersey": 8
+            },
+            {
+                "displayName": "Ricardo Oliveira",
+                "reference": {
+                    "galodigital": "Ricardo_de_Oliveira"
+                },
+                "jersey": 9
+            }
+        ],
+        "bench": [
+            {
+                "displayName": "Leonardo Silva",
+                "reference": {
+                    "galodigital": "Leonardo_Fabiano_da_Silva_e_Silva"
+                },
+                "jersey": 3
+            },
+            {
+                "displayName": "Vinícius",
+                "reference": {
+                    "galodigital": "Vinícius_Goes_Barbosa_de_Souza"
+                },
+                "jersey": 29
+            },
+            {
+                "displayName": "Adílson",
+                "reference": {
+                    "galodigital": "Adílson_Warken"
+                },
+                "jersey": 21
+            },
+            {
+                "displayName": "Cleiton",
+                "reference": {
+                    "galodigital": "Cleiton_Schwengber"
+                },
+                "jersey": 40
+            },
+            {
+                "displayName": "Michael",
+                "reference": {
+                    "galodigital": "Michael_Matias_Fracaro"
+                },
+                "jersey": 31
+            },
+            {
+                "displayName": "Maidana",
+                "reference": {
+                    "galodigital": "Iago_Justen_Maidana_Martins"
+                },
+                "jersey": 19
+            },
+            {
+                "displayName": "Hulk",
+                "reference": {
+                    "galodigital": "Carlos_Gabriel_Moreira_de_Oliveira"
+                },
+                "jersey": 22
+            },
+            {
+                "displayName": "Jair",
+                "reference": {
+                    "galodigital": "Jair_Rodrigues_Júnior"
+                },
+                "jersey": 88
+            },
+            {
+                "displayName": "Nathan",
+                "reference": {
+                    "galodigital": "Nathan_Allan_de_Souza"
+                },
+                "jersey": 23
+            },
+            {
+                "displayName": "Bruno Roberto",
+                "reference": {
+                    "galodigital": "Bruno_Roberto_Pereira_da_Silva"
+                },
+                "jersey": 43
+            },
+            {
+                "displayName": "Maicon",
+                "reference": {
+                    "galodigital": "Maicon_Marques_Bitencourt"
+                },
+                "jersey": 11
+            },
+            {
+                "displayName": "Alerrandro",
+                "reference": {
+                    "galodigital": "Alerrandro_Barra_Mansa_Realino_de_Souza"
+                },
+                "jersey": 44
+            }
+        ]
+    },
+    "awayPlayers": {
+        "lineup": [
+            {
+                "displayName": "Diego Alves",
+                "reference": {
+                    "galodigital": "Diego_Alves_Carreira"
+                },
+                "jersey": 1
+            },
+            {
+                "displayName": "Pará",
+                "jersey": 21
+            },
+            {
+                "displayName": "Léo Duarte",
+                "jersey": 43
+            },
+            {
+                "displayName": "Rodrigo Caio",
+                "jersey": 3
+            },
+            {
+                "displayName": "Renê",
+                "jersey": 6
+            },
+            {
+                "displayName": "Cuellar",
+                "jersey": 8
+            },
+            {
+                "displayName": "Willian Arão",
+                "jersey": 5
+            },
+            {
+                "displayName": "Everton Ribeiro",
+                "jersey": 7
+            },
+            {
+                "displayName": "De Arrascaeta",
+                "jersey": 14
+            },
+            {
+                "displayName": "Bruno Henrique",
+                "jersey": 27
+            },
+            {
+                "displayName": "Gabigol",
+                "jersey": 9
+            }
+        ],
+        "bench": [
+            {
+                "displayName": "Vitinho",
+                "jersey": 11
+            },
+            {
+                "displayName": "Lincoln",
+                "jersey": 29
+            },
+            {
+                "displayName": "Berrio",
+                "jersey": 28
+            },
+            {
+                "displayName": "César",
+                "jersey": 37
+            },
+            {
+                "displayName": "Rodinei",
+                "jersey": 2
+            },
+            {
+                "displayName": "Trauco",
+                "jersey": 13
+            },
+            {
+                "displayName": "Ronaldo",
+                "jersey": 16
+            },
+            {
+                "displayName": "Hugo Moura",
+                "jersey": 17
+            },
+            {
+                "displayName": "Gabriel Batista",
+                "jersey": 22
+            },
+            {
+                "displayName": "Piris da Mota",
+                "jersey": 25
+            },
+            {
+                "displayName": "Matheus Thuler",
+                "jersey": 26
+            }
+        ]
+    },
+    "referee": "Paulo Roberto Alves Júnior",
+    "attendance": 13616
+}
+
+######
 POST http://localhost:3000/fixture
 Content-Type: application/json
 
 {
     "league": {
         "name": "Campeonato Mineiro",
-        "year": 2019
+        "year": 2020
     },
     "round": "1ª rodada",
+    "matchDate": "2020-01-21T21:30:00",
     "homeTeam": {
-        "galodigital": "Atlético"
+        "galodigital": "Uberlândia-MG"
     },
     "awayTeam": {
-        "galodigital": "Boa Esporte-MG"
+        "galodigital": "Atlético"
     },
-    "referee": "Wanderson Alves de Souza",
-    "ground": "Independência",
-    "matchDate": "2019-01-20T17:00:00.000Z",
+    "ground": {
+        "name": "Parque do Sabiá",
+        "city": "Uberlândia-MG, Brasil"
+    },
     "externalReferences": {
-        "galodigital": "201901PRO"
+        "galodigital": "202001PRO_Uberlândia-MG_0_x_1_Atlético"
     }
 }
 
@@ -27,3 +545,6 @@ GET http://localhost:3000/fixture?year=2020
 
 ######
 GET http://localhost:3000/fixture/5f189640518cc102fe250467
+
+######
+GET http://localhost:3000/fixture?galodigital=201815PRO_Uberlândia-MG_0_x_2_Atlético

@@ -89,6 +89,7 @@ export class CreateFixture implements UseCase<CreateFixtureDTO, CreateFixtureRes
             return Result.ok(FixtureMap.toDTO(fixture.value));
         } catch (e) {
             console.log(e);
+            console.log(e.toString());
             return Result.fail(CreateFixtureErrors.UnexpectedError);
         }
     }

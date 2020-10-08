@@ -86,6 +86,10 @@ export class FixtureDetails {
         return Maybe.fromUndefined(this._attendance);
     }
 
+    get referee(): Maybe<string> {
+        return Maybe.fromUndefined(this._referee);
+    }
+
     // getPlayerSummary(player: Player): any {
     //     const output = {};
 

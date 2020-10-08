@@ -3,7 +3,7 @@ const ExternalReference = {
     required: ['provider', 'ref'],
     properties: {
         provider: { bsonType: 'string' },
-        ref: { bsonType: ['int', 'string'] },
+        ref: { bsonType: ['number', 'string'] },
     },
 };
 

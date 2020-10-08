@@ -138,11 +138,9 @@ export class CreateTeam implements UseCase<CreateTeamDTO, CreateTeamResponse> {
 
     private async getStadium(name: string): Promise<Result<Stadium>> {
         let stadiumResult = await this._groundServices.getStadiumByName({ name });
-        console.log(stadiumResult);
 
         if (stadiumResult.failure) {
             stadiumResult = await this._groundServices.create({ name });
-            console.log(stadiumResult);
             if (stadiumResult.failure) return Result.fail<Stadium>('Stadium not found.');
         }
 

@@ -45,7 +45,7 @@ module.exports = {
                     properties: {
                         name: { bsonType: 'string' },
                         nickname: { bsonType: 'string' },
-                        capacity: { bsonType: 'int' },
+                        capacity: { bsonType: 'number' },
                         inauguration: { bsonType: 'date' },
                         geometry: Point,
                         country: { bsonType: 'objectId' },

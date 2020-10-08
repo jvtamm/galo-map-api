@@ -7,7 +7,7 @@ import Maybe from '@core/maybe';
 import TeamMap from '@modules/club/mapper/team-map';
 import { CountryEmbedded } from '@modules/club/mapper/country-map';
 import { DatabaseDriver } from '@infra/contracts';
-import { Refs } from '@modules/club/domain/external-references';
+import { ExternalReference, Refs } from '@modules/club/domain/external-references';
 import { Stadium } from '@modules/club/domain/stadium';
 import { TYPES } from '@config/ioc/types';
 import { Team } from '@modules/club/domain/team';
@@ -56,6 +56,22 @@ class MongoTeamRepo implements TeamRepo {
                 const maybeTeam = Maybe.fromNull(team);
                 return maybeTeam.map(TeamMap.toDomain);
             });
+    }
+
+    async getBulk(refs: ExternalReference[]): Promise<Team[]> {
+        const orExpressions = refs.map((ref) => ({
+            'externalReferences.ref': ref.serialize(),
+            'externalReferences.provider': ref.getProvider(),
+        }));
+
+        if (this.collection.isNone()) {
+            return [];
+        }
+
+        const collection = this.collection.join();
+        const players = await collection.find({ $or: orExpressions }).toArray();
+
+        return players.map(TeamMap.toDomain);
     }
 
     async save(team: Team): Promise<string> {

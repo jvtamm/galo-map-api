@@ -10,7 +10,7 @@ import { Player } from '@modules/club/domain/player';
 import { PlayerMap } from '@modules/club/mapper/player-map';
 import { PlayerRepo } from '@modules/club/repos/player-repo';
 import { PositionProps } from '@modules/club/domain/position';
-import { Refs } from '@modules/club/domain/external-references';
+import { ExternalReference, Refs } from '@modules/club/domain/external-references';
 import { TYPES } from '@config/ioc/types';
 
 export interface PlayerCollection {
@@ -56,6 +56,22 @@ class MongoPlayerRepo implements PlayerRepo {
                 const maybePlayer = Maybe.fromNull(player);
                 return maybePlayer.map(PlayerMap.toDomain);
             });
+    }
+
+    async getBulk(refs: ExternalReference[]): Promise<Player[]> {
+        const orExpressions = refs.map((ref) => ({
+            'externalReferences.ref': ref.serialize(),
+            'externalReferences.provider': ref.getProvider(),
+        }));
+
+        if (this.collection.isNone()) {
+            return [];
+        }
+
+        const collection = this.collection.join();
+        const players = await collection.find({ $or: orExpressions }).toArray();
+
+        return players.map(PlayerMap.toDomain);
     }
 
     async save(player: Player): Promise<string> {
