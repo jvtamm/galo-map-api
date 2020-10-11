@@ -26,7 +26,7 @@ export class SearchFixtures implements UseCase<SearchFixturesDTO, SearchFixtures
                 fixtures: fixtures.map(FixtureMap.toDTO),
             });
         } catch (e) {
-            console.log(e);
+            console.log(e.toString());
             return Result.fail(SearchFixturesErrors.UnexpectedError);
         }
     }

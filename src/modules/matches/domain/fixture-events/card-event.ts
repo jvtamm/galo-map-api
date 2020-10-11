@@ -9,6 +9,7 @@ export interface CardEventProps {
     color: CardColor;
     player: Player;
     team: Team;
+    reason?: string;
 }
 
 export class CardEvent implements FixtureEvents {
@@ -19,6 +20,7 @@ export class CardEvent implements FixtureEvents {
         private _player: Player,
         private _team: Team,
         private _timestamp: number,
+        private _reason?: string,
     // eslint-disable-next-line no-empty-function
     ) {}
 
@@ -42,7 +44,7 @@ export class CardEvent implements FixtureEvents {
             return Result.fail<CardEvent>(error);
         }
 
-        const goalEvent = new CardEvent(props.color, props.player, props.team, timestamp);
+        const goalEvent = new CardEvent(props.color, props.player, props.team, timestamp, props.reason);
         return Result.ok(goalEvent);
     }
 
@@ -55,6 +57,7 @@ export class CardEvent implements FixtureEvents {
             color: this._color,
             player: this._player,
             team: this._team,
+            ...this._reason && { reason: this._reason },
         };
     }
 

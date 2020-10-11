@@ -9,7 +9,7 @@ export interface GoalEventProps {
     goalType: GoalType;
     scorer: Player;
     team: Team;
-    _assistedBy?: Player;
+    assistedBy?: Player;
 }
 
 export class GoalEvent implements FixtureEvents {
@@ -44,7 +44,7 @@ export class GoalEvent implements FixtureEvents {
             return Result.fail<GoalEvent>(error);
         }
 
-        const goalEvent = new GoalEvent(props.goalType, props.scorer, props.team, timestamp, props._assistedBy);
+        const goalEvent = new GoalEvent(props.goalType, props.scorer, props.team, timestamp, props.assistedBy);
         return Result.ok(goalEvent);
     }
 

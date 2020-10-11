@@ -2,6 +2,7 @@ import { EventOptions } from '@modules/matches/domain/fixture-events';
 import { RefDTO } from '@modules/club/domain/external-references';
 
 export interface FixturePlayer {
+    name?: string;
     displayName: string;
     jersey: number;
     reference?: RefDTO;

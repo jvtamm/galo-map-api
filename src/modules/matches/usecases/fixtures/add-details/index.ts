@@ -79,8 +79,18 @@ export class AddFixtureDetails implements UseCase<AddFixtureDetailsDTO, AddFixtu
                 return Result.fail<FixtureDTO>('');
             }
 
+            // Replace by sorting from event factory
+            const sortedEvents = events.value.sort((a, b) => {
+                if (!a.getTimestamp()) return 1;
+                if (!b.getTimestamp()) return -1;
+                if (a.getTimestamp() === b.getTimestamp()) return 0;
+                if (a.getTimestamp() < b.getTimestamp()) return -1;
+
+                return 1;
+            });
+
             const detailsProps = {
-                ...events.value && { events: events.value },
+                ...sortedEvents && { events: sortedEvents },
                 ...request.referee && { referee: request.referee },
                 ...request.attendance && { attendance: request.attendance },
                 homePlayers: players.homePlayers as SummonedPlayers,
@@ -98,8 +108,9 @@ export class AddFixtureDetails implements UseCase<AddFixtureDetailsDTO, AddFixtu
             const savedFixture = await this._fixtureRepo.save(fixture);
 
             return Result.ok<FixtureDTO>(FixtureMap.toDTO(savedFixture));
+            // return Result.ok<FixtureDTO>();
         } catch (error) {
-            console.log(error.toString());
+            console.log(error);
             return Result.fail<FixtureDTO>(AddFixtureDetailsErrors.UnexpectedError);
         }
     }
@@ -173,7 +184,7 @@ export class AddFixtureDetails implements UseCase<AddFixtureDetailsDTO, AddFixtu
 
     formatPlayer(player: FixturePlayer, references: PlayerBulkItem[]): Player {
         const currentPlayer: Player = {
-            name: player.displayName,
+            name: player.displayName || player.name as string,
             ...player.jersey && { jersey: player.jersey },
         };
 
@@ -185,7 +196,7 @@ export class AddFixtureDetails implements UseCase<AddFixtureDetailsDTO, AddFixtu
                 const referencedPlayerName = referencedPlayer.displayName || referencedPlayer.name;
 
                 currentPlayer.name = referencedPlayerName || currentPlayer.name;
-                currentPlayer.jersey = referencedPlayer.jersey || currentPlayer.jersey;
+                currentPlayer.jersey = currentPlayer.jersey || referencedPlayer.jersey;
                 currentPlayer.id = referencedPlayer.id as string;
             }
         }
@@ -204,6 +215,8 @@ export class AddFixtureDetails implements UseCase<AddFixtureDetailsDTO, AddFixtu
                 teamReferences.push(data.team as RefDTO);
             }
         });
+
+        console.log(teamReferences);
 
         const teams = await this._teamServices.getBulk({ externalReferences: teamReferences });
         if (teams.failure) {
@@ -224,6 +237,7 @@ export class AddFixtureDetails implements UseCase<AddFixtureDetailsDTO, AddFixtu
 
             // const playersFields = ['scorer', 'assistedBy', 'inPlayer', 'outPlayer', 'player'];
             const playersFields: Map = {
+                scorer: () => 'scorer',
                 assistedBy: () => 'assistedBy',
                 inPlayer: () => 'inPlayer',
                 outPlayer: () => 'outPlayer',
@@ -240,6 +254,10 @@ export class AddFixtureDetails implements UseCase<AddFixtureDetailsDTO, AddFixtu
             if (event.data.team) {
                 const referencedTeam = teams.value.find(({ externalReferences }) => externalReferences?.some((ref) => ref.provider === Object.keys(event.data.team)[0] && ref.ref === Object.values(event.data.team)[0]));
 
+                // console.log(teams, 'teams');
+                // console.log('data', data);
+                // console.log('referencedTeam', referencedTeam);
+
                 if (referencedTeam) {
                     const teamProps = {
                         name: referencedTeam.name,
@@ -253,8 +271,12 @@ export class AddFixtureDetails implements UseCase<AddFixtureDetailsDTO, AddFixtu
                         return Result.fail<FixtureEvents[]>(team.error as string);
                     }
                     data.team = team.value;
+                } else {
+                    return Result.fail<FixtureEvents[]>(AddFixtureDetailsErrors.InvalidTeams);
                 }
             }
+
+            // console.log('data2', data);
 
             eventInfo.data = data;
             const eventObj = FixtureEventFactory.create(eventInfo);

@@ -5,6 +5,8 @@ import { FixtureDetailsCollection } from '@modules/matches/repos/implementations
 import { FixtureEventFactory, EventOptions } from '@modules/matches/domain/fixture-events';
 import { StaticMapper } from '@infra/contracts/mapper';
 
+import { TeamMap } from './team-map';
+
 export interface FixtureDetailsDTO {
     matchId: string;
     events: EventOptions;
@@ -19,9 +21,18 @@ export const FixtureDetailsMap: StaticMapper<FixtureDetails, FixtureDetailsColle
         const events = raw.events || [];
 
         const props: FixtureDetailsProps = {
-            events: events.map((event: EventOptions) => FixtureEventFactory.create(event)),
+            events: events.map((event: EventOptions) => {
+                const { data } = event;
+
+                if (data.team) {
+                    data.team = TeamMap.toDomain(data.team);
+                }
+
+                const currentEvent = { ...event, data };
+                return FixtureEventFactory.create(currentEvent).value;
+            }),
             homePlayers: raw.homePlayers as SummonedPlayers,
-            awayPlayers: raw.homePlayers as SummonedPlayers,
+            awayPlayers: raw.awayPlayers as SummonedPlayers,
             ...raw.attendance && { attendance: raw.attendance },
             ...raw.referee && { referee: raw.referee },
         };
@@ -41,11 +52,18 @@ export const FixtureDetailsMap: StaticMapper<FixtureDetails, FixtureDetailsColle
 
         return {
             _id,
-            events: fixtureDetails.events.map((event) => ({
-                type: event.getType(),
-                timestamp: event.getTimestamp(),
-                data: event.getData(),
-            })),
+            events: fixtureDetails.events.map((event) => {
+                const data = event.getData();
+                if (data.team) {
+                    data.team = TeamMap.toPersistance(data.team);
+                }
+
+                return ({
+                    type: event.getType(),
+                    timestamp: event.getTimestamp(),
+                    data,
+                });
+            }),
             homePlayers: fixtureDetails.homePlayers,
             awayPlayers: fixtureDetails.awayPlayers,
             ...maybeReferee && { referee: maybeReferee },
@@ -55,11 +73,18 @@ export const FixtureDetailsMap: StaticMapper<FixtureDetails, FixtureDetailsColle
 
     toDTO: (fixtureDetails: FixtureDetails) => ({
         matchId: '',
-        events: fixtureDetails.events.map((event) => ({
-            type: event.getType(),
-            timestamp: event.getTimestamp(),
-            data: event.getData(),
-        })),
+        events: fixtureDetails.events.map((event) => {
+            const data = event.getData();
+            if (data.team) {
+                data.team = TeamMap.toDTO(data.team);
+            }
+
+            return {
+                type: event.getType(),
+                timestamp: event.getTimestamp(),
+                data,
+            };
+        }),
         awayPlayers: fixtureDetails.awayPlayers,
         homePlayers: fixtureDetails.homePlayers,
         referee: fixtureDetails.referee.fold<null | string>(null)((value) => value as string),

@@ -43,7 +43,8 @@ export class MongoFixtureDetailsRepo implements FixtureDetailsRepo {
     }
 
     async getByMatchId(matchId: string): Promise<Maybe<FixtureDetails>> {
-        const details = await this._collection.findOne({ matchId });
+        const _id = new ObjectId(matchId);
+        const details = await this._collection.findOne({ _id });
 
         return Maybe.fromNull(details).map(this._mapper.toDomain);
     }

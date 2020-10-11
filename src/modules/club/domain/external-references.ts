@@ -40,6 +40,29 @@ class FotmobRef implements ExternalReference {
     }
 }
 
+class SofascoreRef implements ExternalReference {
+    private readonly _provider = 'sofascore';
+
+    private _ref: number;
+
+    // eslint-disable-next-line no-empty-function
+    constructor(ref: string | number) {
+        this._ref = Number(ref);
+    }
+
+    getProvider(): string {
+        return this._provider;
+    }
+
+    equals(ref: number) {
+        return this._ref === ref;
+    }
+
+    serialize(): number {
+        return this._ref;
+    }
+}
+
 class GaloDigitalRef implements ExternalReference {
     private readonly _provider = 'galodigital';
 
@@ -71,10 +94,12 @@ export class ExternalReferenceFactory {
         switch (provider) {
             case 'fotmob':
                 return new FotmobRef(ref);
+            case 'sofascore':
+                return new SofascoreRef(ref);
             case 'galodigital':
                 return new GaloDigitalRef(ref);
             default:
-                throw new Error(`Wrong external reference: "${provider}" given. Supported drivers are: "fotmob" and "galodigital".`);
+                throw new Error(`Wrong external reference: "${provider}" given. Supported drivers are: "fotmob", "galodigital" and "sofascore".`);
         }
     }
 
