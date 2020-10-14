@@ -2,6 +2,7 @@ import Result from '@core/result';
 
 import { CardEventProps, CardEvent } from './card-event';
 import { GoalEventProps, GoalEvent } from './goal-event';
+import { PenaltyEvent, PenaltyEventProps } from './penalty-event';
 import { PeriodEvent, PeriodEventProps } from './period-event';
 import { SubstitutionEventProps, SubstitutionEvent } from './substitution-event';
 
@@ -32,8 +33,10 @@ export class FixtureEventFactory {
                 return SubstitutionEvent.create(options.data as SubstitutionEventProps, options.timestamp);
             case 'period':
                 return PeriodEvent.create(options.data as PeriodEventProps, options.timestamp as number);
+            case 'penalty':
+                return PenaltyEvent.create(options.data as PenaltyEventProps, options.timestamp as number);
             default:
-                return Result.fail(`Wrong event type: "${type}" given. Supported events are: "card", "goal", "substitution", "period".`);
+                return Result.fail(`Wrong event type: "${type}" given. Supported events are: "card", "goal", "substitution", "period", "penalty".`);
         }
     }
 
@@ -46,11 +49,15 @@ export class FixtureEventFactory {
             const aTimestamp = a.getTimestamp();
             const bTimestamp = b.getTimestamp();
 
-            const hasATimestemp = !aTimestamp && aTimestamp !== 0;
-            const hasBTimestemp = !bTimestamp && bTimestamp !== 0;
+            const hasNoATimestamp = !aTimestamp && aTimestamp !== 0;
+            const hasNoBTimestamp = !bTimestamp && bTimestamp !== 0;
 
-            if (!hasATimestemp) return 1;
-            if (!hasBTimestemp) return -1;
+            if (a.getType() === 'penalty' && b.getType() === 'penalty') return -1;
+            if (a.getType() === 'penalty') return 1;
+            if (b.getType() === 'penalty') return -1;
+
+            if (hasNoATimestamp) return 1;
+            if (hasNoBTimestamp) return -1;
             if (aTimestamp < bTimestamp) return -1;
             if (aTimestamp === bTimestamp) {
                 if (a.getType() === 'period') return -1;

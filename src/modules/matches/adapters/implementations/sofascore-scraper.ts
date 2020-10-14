@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { injectable } from 'inversify';
 
 import Result from '@core/result';
 import { AddFixtureDetailsDTO, FixturePlayer, SummonedFixturePlayers } from '@modules/matches/usecases/fixtures/add-details';
@@ -22,6 +23,7 @@ type Players = {
     awayPlayers: SummonedFixturePlayers;
 }
 
+@injectable()
 export class SofascoreFixtureScraper implements FixtureScraper {
     private readonly _httpInstance = axios.create({
         baseURL: 'https://api.sofascore.com/api/v1/',
@@ -132,6 +134,7 @@ export class SofascoreFixtureScraper implements FixtureScraper {
             leagueYear = parseInt(`${currentYearBeginDigits}${seasonBeginYear}`, 10);
         }
 
+        // Create name mapping -> Map to already created tounaments
         return {
             name: leagueName,
             year: leagueYear,
@@ -175,7 +178,14 @@ export class SofascoreFixtureScraper implements FixtureScraper {
     }
 
     private formatIncident(incident: any, home: RefDTO, away: RefDTO): Result<EventOptions> {
-        const incidentMap: Map<Function> = {
+        const incidentTypeMap: Map<Function> = {
+            goal: (data: any) => (data.time < 0 ? 'penalty' : 'goal'),
+            card: () => 'card',
+            substitution: () => 'substitution',
+            period: () => 'period',
+        };
+
+        const incidentDataMap: Map<Function> = {
             goal: (data: any) => ({
                 scorer: this.formatPlayer(data.player),
                 ...data.assist1 && { assistedBy: this.formatPlayer(data.assist1) },
@@ -202,8 +212,15 @@ export class SofascoreFixtureScraper implements FixtureScraper {
             // 'injuryTime': () => {}
         };
 
-        const dataExtractor = incidentMap[incident.incidentType];
-        if (!dataExtractor) return Result.fail('');
+        const { incidentType } = incident;
+
+        const typeExtractor = incidentTypeMap[incidentType];
+        if (!typeExtractor) return Result.fail('Error');
+
+        const type = typeExtractor(incident);
+
+        const dataExtractor = incidentDataMap[type];
+        if (!dataExtractor) return Result.fail('Error');
 
         const eventInfo: EventOptions = {
             type: incident.incidentType,
@@ -286,6 +303,8 @@ export class SofascoreFixtureScraper implements FixtureScraper {
             const { events } = data;
 
             fixtureIndex = this.findNextFixtureIndex(events, from);
+            console.log(fixtureIndex);
+            console.log(currentPage);
 
             if (fixtureIndex > 0) {
                 memoizedValues[currentPage] = events.slice(fixtureIndex, events.length);
@@ -317,8 +336,6 @@ export class SofascoreFixtureScraper implements FixtureScraper {
                     fixture.details = details.value;
                 }
 
-                console.log(fixture);
-
                 fixtures.push(fixture);
             }
         }
@@ -348,8 +365,6 @@ export class SofascoreFixtureScraper implements FixtureScraper {
                 if (details.failure) return Result.fail(details.error as string);
                 fixture.details = details.value;
             }
-
-            console.log(fixture);
 
             fixtures.push(fixture);
         }

@@ -20,6 +20,7 @@ export class CreateFixtureController extends BaseController {
         const dto: CreateFixtureDTO = req.body as CreateFixtureDTO;
 
         const result = await this._fixtureService.create(dto);
+        // const result = await this._fixtureService.scrapeAvailableFixtures();
 
         if (result.failure) {
             const { error } = result;

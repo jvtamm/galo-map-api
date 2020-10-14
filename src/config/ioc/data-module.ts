@@ -18,6 +18,7 @@ import { ContractRepo } from '@modules/club/repos/contract-repo';
 import { CountryRepo } from '@modules/location/repos/country-repo';
 import { FixtureDetailsRepo } from '@modules/matches/repos/fixture-details-repo';
 import { FixtureRepo } from '@modules/matches/repos/fixture-repo';
+import { FixtureScraper } from '@modules/matches/adapters/fixture-scraper';
 import { Geocoding } from '@modules/location/adapters/geocoding';
 import { LeagueEditionRepo } from '@modules/matches/repos/league-edition';
 import { LeagueRepo } from '@modules/matches/repos/league-repo';
@@ -28,6 +29,7 @@ import { SquadRepo } from '@modules/club/repos/squad-repo';
 import { StadiumRepo } from '@modules/location/repos/stadium-repo';
 import { StadiumScraper } from '@modules/location/adapters/stadium-scraper';
 import { TeamRepo } from '@modules/club/repos/team-repo';
+import { TeamScraper } from '@modules/club/adapters/team-scraper';
 
 // Services
 import { IContractService, ContractService } from '@modules/club/usecases/contract';
@@ -43,6 +45,8 @@ import { StadiumService, IStadiumService } from '@modules/location/usecases/stad
 // Adapters
 import { Nominatim } from '@modules/location/adapters/implementations/nominatim';
 import { WikipediaScraper } from '@modules/location/adapters/implementations/wikipedia-scraper';
+import { SofascoreFixtureScraper } from '@modules/matches/adapters/implementations/sofascore-scraper';
+import { SofascoreTeamScraper } from '@modules/club/adapters/implementations/sofascore-scraper';
 
 // Types
 import { TYPES } from './types';
@@ -56,6 +60,8 @@ const clubBind = (bind: interfaces.Bind) => {
     bind<PlayerRepo>(TYPES.PlayerRepo).to(MongoPlayerRepo).inSingletonScope();
     bind<SquadRepo>(TYPES.SquadRepo).to(MongoSquadRepo).inSingletonScope();
     bind<TeamRepo>(TYPES.TeamRepo).to(MongoTeamRepo).inSingletonScope();
+
+    bind<TeamScraper>(TYPES.TeamScraper).to(SofascoreTeamScraper).inSingletonScope();
 };
 
 const fixtureBind = (bind: interfaces.Bind) => {
@@ -68,6 +74,8 @@ const fixtureBind = (bind: interfaces.Bind) => {
     bind<LeagueEditionRepo>(TYPES.LeagueEditionRepo).to(MongoLeagueEditionRepo).inSingletonScope();
     bind<LeagueRepo>(TYPES.LeagueRepo).to(MongoLeagueRepo).inSingletonScope();
     bind<SeasonRepo>(TYPES.SeasonRepo).to(MongoSeasonRepo).inSingletonScope();
+
+    bind<FixtureScraper>(TYPES.FixtureScraper).to(SofascoreFixtureScraper).inSingletonScope();
 };
 
 const locationBind = (bind: interfaces.Bind) => {

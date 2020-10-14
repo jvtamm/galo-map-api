@@ -10,6 +10,8 @@ export interface FixtureRepo {
     exists(homeTeam: FixtureTeam, awayTeam: FixtureTeam, matchDate: Date): Promise<boolean>;
     getById(id: string): Promise<Maybe<Fixture>>;
     getByReference(refs: ExternalReference[]): Promise<Maybe<Fixture>>;
+    getFixturesPendingDetails(): Promise<Fixture[]>;
     save(fixture: Fixture): Promise<Fixture>;
-    search(filters: FixtureFilters): Promise<Fixture[]>
+    search(filters: FixtureFilters): Promise<Fixture[]>;
+    getLast(): Promise<Maybe<Fixture>>;
 }

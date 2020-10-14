@@ -71,7 +71,11 @@ export class Player extends Entity<PlayerProps, string | number> {
     }
 
     getDateOfBirth(): Date {
-        return this.props.dateOfBirth.value;
+        if (this.props.dateOfBirth) {
+            return this.props.dateOfBirth.value;
+        }
+
+        return undefined as unknown as Date;
     }
 
     getNationality(): Country {

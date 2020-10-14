@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { injectable } from 'inversify';
 
 import Result from '@core/result';
 import { PlayerInfo, TeamInfo, TeamScraper } from '@modules/club/adapters/team-scraper';
@@ -77,6 +78,7 @@ enum SofascorePlayersErrors {
     UnexpectedError = 'An unexpected error has occurred.'
 }
 
+@injectable()
 export class SofascoreTeamScraper implements TeamScraper {
     private readonly _httpInstance = axios.create({
         baseURL: 'https://api.sofascore.com/api/v1/',

@@ -8,7 +8,9 @@ import { DatabaseDriver } from '@infra/contracts';
 import { EmbeddedLeagueEdition } from '@modules/matches/mappers/league-edition-map';
 import { EmbeddedStadium } from '@modules/matches/mappers/stadium-map';
 import { ExternalReference, Refs } from '@modules/club/domain/external-references';
-import { Fixture, FixtureTeam, FixtureStatus } from '@modules/matches/domain/fixture';
+import {
+    Fixture, FixtureTeam, FixtureStatus, FixtureStatusOptions,
+} from '@modules/matches/domain/fixture';
 import { FixtureDetails } from '@modules/matches/domain/fixture-details';
 import { FixtureDetailsRepo } from '@modules/matches/repos/fixture-details-repo';
 import { FixtureMap } from '@modules/matches/mappers/fixture-map';
@@ -153,6 +155,42 @@ export class MongoFixtureRepo extends GenericMongoRepository<Fixture, FixtureCol
         const fixture = await this.collection.findOne({ $or: orExpressions });
         if (!fixture) return Maybe.none();
 
+        const maybeDetails = await this._fixtureDetailsRepo.getByMatchId(fixture._id);
+        fixture.details = maybeDetails.fold<undefined | FixtureDetails>(undefined)((value) => value as FixtureDetails);
+
+        return Maybe.fromNull(fixture).map(this.loadDependencies).map(this.mapper.toDomain);
+    }
+
+    async getFixturesPendingDetails(): Promise<Fixture[]> {
+        const ESTIMATED_FIXTURE_MINUTES = 150;
+        const currentDate = new Date();
+        currentDate.setMinutes(currentDate.getMinutes() + ESTIMATED_FIXTURE_MINUTES);
+
+        const dateQuery = {
+            matchDate: { $lte: currentDate },
+        };
+
+        const statusQuery = {
+            status: FixtureStatusOptions.NotStarted,
+        };
+
+        const fixtures = await this.collection.find({ $and: [dateQuery, statusQuery] }).sort({ matchDate: 1 }).toArray();
+        const result: Fixture[] = [];
+        for (let i = 0; i < fixtures.length; i += 1) {
+            // eslint-disable-next-line no-await-in-loop
+            const processedObj = await this.loadDependencies(fixtures[i]);
+
+            result.push(this.mapper.toDomain(processedObj));
+        }
+
+        return result;
+    }
+
+    async getLast(): Promise<Maybe<Fixture>> {
+        const fixtures = await this.collection.find().sort({ matchDate: -1 }).limit(1).toArray();
+        if (!fixtures.length) return Maybe.none();
+
+        const fixture = fixtures[0];
         const maybeDetails = await this._fixtureDetailsRepo.getByMatchId(fixture._id);
         fixture.details = maybeDetails.fold<undefined | FixtureDetails>(undefined)((value) => value as FixtureDetails);
 

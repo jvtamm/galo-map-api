@@ -4,60 +4,58 @@ import { Guard } from '@core/guard';
 import { Player } from '@modules/matches/domain/player';
 import { Team } from '@modules/matches/domain/team';
 
-type GoalType = 'GOAL' | 'PENALTY';
-export interface GoalEventProps {
-    goalType: GoalType;
-    scorer: Player;
+export interface PenaltyEventProps {
+    scored: boolean;
+    player: Player;
     team: Team;
-    assistedBy?: Player;
 }
 
-export class GoalEvent implements FixtureEvents {
-    private readonly _type = 'goal';
+export class PenaltyEvent implements FixtureEvents {
+    private readonly _type = 'penalty';
 
     private constructor(
-        private _goalType: GoalType,
-        private _scorer: Player,
+        private _scored: boolean,
+        private _player: Player,
         private _team: Team,
         private _timestamp?: number,
-        private _assistedBy?: Player,
     // eslint-disable-next-line no-empty-function
     ) {}
 
-    static create(props: GoalEventProps, timestamp?: number): Result<GoalEvent> {
+    static create(props: PenaltyEventProps, timestamp?: number): Result<PenaltyEvent> {
         const guardedProps = [
-            { argument: props.goalType, argumentName: 'goalType' },
-            { argument: props.scorer, argumentName: 'scorer' },
+            { argument: props.scored, argumentName: 'scored' },
+            { argument: props.player, argumentName: 'player' },
             { argument: props.team, argumentName: 'team' },
         ];
 
         const guardResult = Guard.againstNullOrUndefinedBulk(guardedProps);
         if (!guardResult.succeeded) {
             const error = guardResult.message || 'Unexpected error';
-            return Result.fail<GoalEvent>(error);
+            return Result.fail<PenaltyEvent>(error);
         }
 
         if (timestamp) {
             const MAX_MIN_WITH_EXTRA = 125;
             const timestampValidation = Guard.inRange(timestamp, 0, MAX_MIN_WITH_EXTRA, 'timestamp');
+
             if (!timestampValidation.succeeded) {
                 const error = timestampValidation.message || 'Unexpected error';
-                return Result.fail<GoalEvent>(error);
+                return Result.fail<PenaltyEvent>(error);
             }
         }
 
-        const goalEvent = new GoalEvent(props.goalType, props.scorer, props.team, timestamp, props.assistedBy);
-        return Result.ok(goalEvent);
+        const penaltyEvent = new PenaltyEvent(props.scored, props.player, props.team, timestamp);
+        return Result.ok(penaltyEvent);
     }
 
     getType(): string {
         return this._type;
     }
 
-    getData(): GoalEventProps {
+    getData(): PenaltyEventProps {
         return {
-            goalType: this._goalType,
-            scorer: this._scorer,
+            scored: this._scored,
+            player: this._player,
             team: this._team,
         };
     }

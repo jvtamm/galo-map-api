@@ -2,18 +2,18 @@ POST http://localhost:3000/team
 Content-Type: application/json
 
 {
-    "name": "ABC Futebol Clube",
-    "abbreviation": "ABC",
-    "displayName": "ABC-RN",
-    "country": "Brasil",
+    "name": "Tampa Bay Rowdies",
+    "abbreviation": "TBR",
+    "displayName": "Tampa Bay Rowdies",
+    "country": "Estados Unidos",
     "grounds": [
-        "Frasqueirão"
+        "Al Lang Stadium"
     ],
     "externalReferences": {
-        "galodigital": "ABC-RN"
+        "galodigital": "Tampa_Bay_Rowdies-EUA"
     },
-    "founded": 1915,
-    "primaryColor": "#000000",
+    "founded": 2008,
+    "primaryColor": "#006400",
     "secondaryColor": "#FFFFFF"
 }
 

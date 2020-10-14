@@ -1,18 +1,21 @@
 import { injectable, inject } from 'inversify';
 
 import TYPES from '@config/ioc/types';
+import { FixtureDetailsRepo } from '@modules/matches/repos/fixture-details-repo';
 import { FixtureRepo } from '@modules/matches/repos/fixture-repo';
+import { FixtureScraper } from '@modules/matches/adapters/fixture-scraper';
 import { IPlayerService } from '@modules/club/usecases/player';
 import { IStadiumService } from '@modules/location/usecases/stadium';
 import { ITeamService } from '@modules/club/usecases/team';
 import { LeagueService } from '@modules/matches/usecases/league';
-import { FixtureDetailsRepo } from '@modules/matches/repos/fixture-details-repo';
 
 import { CreateFixtureDTO, CreateFixtureResponse, CreateFixture } from './create';
 import { SearchFixtures, SearchFixturesDTO, SearchFixturesRespose } from './search';
 import { GetFixtureById, GetFixtureByIdDTO, GetFixtureByIdResponse } from './getById';
 import { GetFixtureByReference, GetFixtureByReferenceDTO, GetFixtureByReferenceResponse } from './get-by-reference';
 import { AddFixtureDetails, AddFixtureDetailsDTO, AddFixtureDetailsResponse } from './add-details';
+import { LoadPendingFixtureDetails, LoadPendingFixtureDetailsResponse } from './load-pending-details';
+import { ScrapeAvailableFixtures, ScrapeAvailableFixturesResponse } from './scrape-available-fixtures';
 
 export interface IFixtureService {
     addDetails(request: AddFixtureDetailsDTO): Promise<AddFixtureDetailsResponse>;
@@ -20,6 +23,8 @@ export interface IFixtureService {
     getById(request: GetFixtureByIdDTO): Promise<GetFixtureByIdResponse>;
     search(request: SearchFixturesDTO): Promise<SearchFixturesRespose>;
     getByReference(request: GetFixtureByReferenceDTO): Promise<GetFixtureByReferenceResponse>;
+    loadPendingFixtureDetails(): Promise<LoadPendingFixtureDetailsResponse>;
+    scrapeAvailableFixtures(): Promise<ScrapeAvailableFixturesResponse>;
 }
 
 @injectable()
@@ -31,6 +36,7 @@ export class FixtureService implements IFixtureService {
         @inject(TYPES.StadiumService) private _groundServices: IStadiumService,
         @inject(TYPES.TeamService) private _teamServices: ITeamService,
         @inject(TYPES.PlayerService) private _playerServices: IPlayerService,
+        @inject(TYPES.FixtureScraper) private _fixtureScraper: FixtureScraper,
     // eslint-disable-next-line no-empty-function
     ) {}
 
@@ -67,5 +73,17 @@ export class FixtureService implements IFixtureService {
         const searchFixtures = new SearchFixtures(this._fixtureRepo);
 
         return searchFixtures.execute(request);
+    }
+
+    loadPendingFixtureDetails(): Promise<LoadPendingFixtureDetailsResponse> {
+        const loadPendingFixtureDetails = new LoadPendingFixtureDetails(this._fixtureRepo, this, this._fixtureScraper);
+
+        return loadPendingFixtureDetails.execute();
+    }
+
+    scrapeAvailableFixtures(): Promise<ScrapeAvailableFixturesResponse> {
+        const scrapeAvailableFixtures = new ScrapeAvailableFixtures(this._fixtureRepo, this, this._fixtureScraper);
+
+        return scrapeAvailableFixtures.execute();
     }
 }

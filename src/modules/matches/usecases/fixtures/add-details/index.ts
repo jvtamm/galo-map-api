@@ -76,18 +76,10 @@ export class AddFixtureDetails implements UseCase<AddFixtureDetailsDTO, AddFixtu
             );
 
             if (events.failure) {
-                return Result.fail<FixtureDTO>('');
+                return Result.fail<FixtureDTO>(events.error as string);
             }
 
-            // Replace by sorting from event factory
-            const sortedEvents = events.value.sort((a, b) => {
-                if (!a.getTimestamp()) return 1;
-                if (!b.getTimestamp()) return -1;
-                if (a.getTimestamp() === b.getTimestamp()) return 0;
-                if (a.getTimestamp() < b.getTimestamp()) return -1;
-
-                return 1;
-            });
+            const sortedEvents = FixtureEventFactory.sort(events.value);
 
             const detailsProps = {
                 ...sortedEvents && { events: sortedEvents },
@@ -215,8 +207,6 @@ export class AddFixtureDetails implements UseCase<AddFixtureDetailsDTO, AddFixtu
                 teamReferences.push(data.team as RefDTO);
             }
         });
-
-        console.log(teamReferences);
 
         const teams = await this._teamServices.getBulk({ externalReferences: teamReferences });
         if (teams.failure) {

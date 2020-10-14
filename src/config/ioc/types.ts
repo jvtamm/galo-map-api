@@ -25,6 +25,8 @@ const ClubTypes = {
     SquadRepo: Symbol('SquadRepo'),
     PlayerRepo: Symbol('PlayerRepo'),
     ContractRepo: Symbol('ContractRepo'),
+
+    TeamScraper: Symbol('TeamScraper'),
 };
 
 const FixtureTypes = {
@@ -37,6 +39,8 @@ const FixtureTypes = {
     LeagueRepo: Symbol('LeagueRepo'),
     LeagueEditionRepo: Symbol('LeagueEditionRepo'),
     SeasonRepo: Symbol('SeasonRepo'),
+
+    FixtureScraper: Symbol('FixtureScraper'),
 };
 
 const ScraperTypes = {

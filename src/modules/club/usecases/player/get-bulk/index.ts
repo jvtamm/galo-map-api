@@ -37,7 +37,7 @@ export class GetPlayerBulk implements UseCase<GetPlayerBulkDTO, GetPlayerBulkRes
             const dto = players.map((p) => ({
                 id: p.getId().fold<string>('')((value) => value as string),
                 name: p.getName(),
-                dateOfBirth: p.getDateOfBirth().toISOString(),
+                dateOfBirth: p.getDateOfBirth() ? p.getDateOfBirth().toISOString() : '',
                 nationality: p.getNationality(),
                 position: PositionMap.toDTO(p.getPosition()),
                 externalReferences: p.getRefs().fold<Refs[] | null>(null)((value) => value as Refs[]),

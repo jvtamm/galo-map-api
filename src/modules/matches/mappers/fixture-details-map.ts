@@ -2,13 +2,14 @@ import { ObjectId } from 'mongodb';
 
 import { FixtureDetails, SummonedPlayers, FixtureDetailsProps } from '@modules/matches/domain/fixture-details';
 import { FixtureDetailsCollection } from '@modules/matches/repos/implementations/mongo-fixture-details-repo';
-import { FixtureEventFactory, EventOptions } from '@modules/matches/domain/fixture-events';
+import { EventOptions } from '@modules/matches/domain/fixture-events';
 import { StaticMapper } from '@infra/contracts/mapper';
 
-import { TeamMap } from './team-map';
+import { PlayerMap } from './player-map';
+import { EventMap } from './event-map';
 
 export interface FixtureDetailsDTO {
-    matchId: string;
+    // matchId: string;
     events: EventOptions;
     homePlayers: SummonedPlayers;
     awayPlayers: SummonedPlayers;
@@ -16,23 +17,44 @@ export interface FixtureDetailsDTO {
     referee?: string;
 }
 
+const SummonedPlayersMap = {
+    toDomain: (raw: any) => {
+        const bench = raw.bench.map(PlayerMap.toDomain);
+        const lineup = raw.lineup.map(PlayerMap.toDomain);
+
+        return {
+            bench,
+            lineup,
+        };
+    },
+    toPersistance: (summonedPlayers: SummonedPlayers) => {
+        const bench = summonedPlayers.bench.map(PlayerMap.toPersistance);
+        const lineup = summonedPlayers.lineup.map(PlayerMap.toPersistance);
+
+        return {
+            bench,
+            lineup,
+        };
+    },
+    toDTO: (summonedPlayers: SummonedPlayers) => {
+        const bench = summonedPlayers.bench.map(PlayerMap.toDTO);
+        const lineup = summonedPlayers.lineup.map(PlayerMap.toDTO);
+
+        return {
+            bench,
+            lineup,
+        };
+    },
+};
+
 export const FixtureDetailsMap: StaticMapper<FixtureDetails, FixtureDetailsCollection> = {
     toDomain: (raw: any) => {
         const events = raw.events || [];
 
         const props: FixtureDetailsProps = {
-            events: events.map((event: EventOptions) => {
-                const { data } = event;
-
-                if (data.team) {
-                    data.team = TeamMap.toDomain(data.team);
-                }
-
-                const currentEvent = { ...event, data };
-                return FixtureEventFactory.create(currentEvent).value;
-            }),
-            homePlayers: raw.homePlayers as SummonedPlayers,
-            awayPlayers: raw.awayPlayers as SummonedPlayers,
+            events: events.map(EventMap.toDomain),
+            homePlayers: SummonedPlayersMap.toDomain(raw.homePlayers) as SummonedPlayers,
+            awayPlayers: SummonedPlayersMap.toDomain(raw.awayPlayers) as SummonedPlayers,
             ...raw.attendance && { attendance: raw.attendance },
             ...raw.referee && { referee: raw.referee },
         };
@@ -52,41 +74,18 @@ export const FixtureDetailsMap: StaticMapper<FixtureDetails, FixtureDetailsColle
 
         return {
             _id,
-            events: fixtureDetails.events.map((event) => {
-                const data = event.getData();
-                if (data.team) {
-                    data.team = TeamMap.toPersistance(data.team);
-                }
-
-                return ({
-                    type: event.getType(),
-                    timestamp: event.getTimestamp(),
-                    data,
-                });
-            }),
-            homePlayers: fixtureDetails.homePlayers,
-            awayPlayers: fixtureDetails.awayPlayers,
+            events: fixtureDetails.events.map(EventMap.toPersistance),
+            homePlayers: SummonedPlayersMap.toPersistance(fixtureDetails.homePlayers),
+            awayPlayers: SummonedPlayersMap.toPersistance(fixtureDetails.awayPlayers),
             ...maybeReferee && { referee: maybeReferee },
             ...maybeAttendance && { attendance: maybeAttendance },
         };
     },
 
     toDTO: (fixtureDetails: FixtureDetails) => ({
-        matchId: '',
-        events: fixtureDetails.events.map((event) => {
-            const data = event.getData();
-            if (data.team) {
-                data.team = TeamMap.toDTO(data.team);
-            }
-
-            return {
-                type: event.getType(),
-                timestamp: event.getTimestamp(),
-                data,
-            };
-        }),
-        awayPlayers: fixtureDetails.awayPlayers,
-        homePlayers: fixtureDetails.homePlayers,
+        events: fixtureDetails.events.map(EventMap.toDTO),
+        awayPlayers: SummonedPlayersMap.toDTO(fixtureDetails.awayPlayers),
+        homePlayers: SummonedPlayersMap.toDTO(fixtureDetails.homePlayers),
         referee: fixtureDetails.referee.fold<null | string>(null)((value) => value as string),
         attendance: fixtureDetails.attendance.fold<null | number>(null)((value) => value as number),
     }),
