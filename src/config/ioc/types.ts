@@ -1,6 +1,7 @@
 const InfraTypes = {
     App: Symbol('App'),
     DbClient: Symbol('DbClient'),
+    JobScheduler: Symbol('JobScheduler'),
 };
 
 const LocationTypes = {

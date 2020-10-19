@@ -75,6 +75,10 @@ class MongoDriver implements DatabaseDriver {
         return builder.retreive<T>(name);
     }
 
+    getDb(): Db {
+        return this._db as Db;
+    }
+
     private async runMigrations(): Promise<void> {
         const hasPendingMigrations = await this.hasPendingMigrations();
         if (hasPendingMigrations && this._options.configs.runMigrations) {

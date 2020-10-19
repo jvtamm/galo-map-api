@@ -25,7 +25,6 @@ export class ScrapeAvailableFixtures implements UseCase<void, ScrapeAvailableFix
             const ATLETICO_SOFASCORE_ID = 1977;
 
             const lastFixture = maybeLastFixture.join();
-            console.log(JSON.stringify(lastFixture));
             const reference = lastFixture.refs.find(({ provider }) => provider === 'sofascore');
 
             const fixturesResult = await this._fixtureScraper.getNextTeamMatches(

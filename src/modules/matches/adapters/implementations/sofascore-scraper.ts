@@ -135,8 +135,20 @@ export class SofascoreFixtureScraper implements FixtureScraper {
         }
 
         // Create name mapping -> Map to already created tounaments
+        const tournamentNameMap: Map<string> = {
+            Mineiro: 'Campeonato Mineiro',
+            'Brasileiro Serie A': 'Campeonato Brasileiro',
+            'CONMEBOL Sudamericana': 'Copa SulAmericana',
+            'Copa do Brasil': 'Copa do Brasil',
+            'Copa Libertadores': 'Copa Libertadores da América',
+            'Florida Cup': 'Florida Cup',
+            'Primeira Liga do Brasil': 'Primeira Liga',
+            'Club Friendly Games': 'Amistosos',
+            'Recopa Sudamericana': 'Recopa SulAmericana',
+        };
+
         return {
-            name: leagueName,
+            name: tournamentNameMap[leagueName] || leagueName,
             year: leagueYear,
         };
     }

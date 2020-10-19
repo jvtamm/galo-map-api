@@ -9,22 +9,26 @@ import { IStadiumService } from '@modules/location/usecases/stadium';
 import { ITeamService } from '@modules/club/usecases/team';
 import { LeagueService } from '@modules/matches/usecases/league';
 
+import { AddFixtureDetails, AddFixtureDetailsDTO, AddFixtureDetailsResponse } from './add-details';
 import { CreateFixtureDTO, CreateFixtureResponse, CreateFixture } from './create';
-import { SearchFixtures, SearchFixturesDTO, SearchFixturesRespose } from './search';
 import { GetFixtureById, GetFixtureByIdDTO, GetFixtureByIdResponse } from './getById';
 import { GetFixtureByReference, GetFixtureByReferenceDTO, GetFixtureByReferenceResponse } from './get-by-reference';
-import { AddFixtureDetails, AddFixtureDetailsDTO, AddFixtureDetailsResponse } from './add-details';
+import { GetTodaysFixture, GetTodaysFixtureResponse } from './get-todays-fixture';
 import { LoadPendingFixtureDetails, LoadPendingFixtureDetailsResponse } from './load-pending-details';
 import { ScrapeAvailableFixtures, ScrapeAvailableFixturesResponse } from './scrape-available-fixtures';
+import { ScrapeFixtureDetails, ScrapeFixtureDetailsDTO, ScrapeFixtureDetailsResponse } from './scrape-fixture-details';
+import { SearchFixtures, SearchFixturesDTO, SearchFixturesRespose } from './search';
 
 export interface IFixtureService {
     addDetails(request: AddFixtureDetailsDTO): Promise<AddFixtureDetailsResponse>;
     create(request: CreateFixtureDTO): Promise<CreateFixtureResponse>;
     getById(request: GetFixtureByIdDTO): Promise<GetFixtureByIdResponse>;
-    search(request: SearchFixturesDTO): Promise<SearchFixturesRespose>;
     getByReference(request: GetFixtureByReferenceDTO): Promise<GetFixtureByReferenceResponse>;
+    getTodaysFixture(): Promise<GetTodaysFixtureResponse>
     loadPendingFixtureDetails(): Promise<LoadPendingFixtureDetailsResponse>;
     scrapeAvailableFixtures(): Promise<ScrapeAvailableFixturesResponse>;
+    scrapeFixtureDetails(request: ScrapeFixtureDetailsDTO): Promise<ScrapeFixtureDetailsResponse>;
+    search(request: SearchFixturesDTO): Promise<SearchFixturesRespose>;
 }
 
 @injectable()
@@ -85,5 +89,17 @@ export class FixtureService implements IFixtureService {
         const scrapeAvailableFixtures = new ScrapeAvailableFixtures(this._fixtureRepo, this, this._fixtureScraper);
 
         return scrapeAvailableFixtures.execute();
+    }
+
+    getTodaysFixture(): Promise<GetTodaysFixtureResponse> {
+        const getTodaysFixture = new GetTodaysFixture(this._fixtureRepo);
+
+        return getTodaysFixture.execute();
+    }
+
+    scrapeFixtureDetails(request: ScrapeFixtureDetailsDTO): Promise<ScrapeFixtureDetailsResponse> {
+        const scrapeFixtureDetails = new ScrapeFixtureDetails(this._fixtureScraper, this);
+
+        return scrapeFixtureDetails.execute(request);
     }
 }

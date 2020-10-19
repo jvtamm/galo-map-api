@@ -28,12 +28,18 @@ export class LoadPendingFixtureDetails implements UseCase<void, LoadPendingFixtu
                 const reference = fixture.refs.find(({ provider }) => provider === 'sofascore');
 
                 if (reference) {
+                    // // eslint-disable-next-line no-await-in-loop
+                    // const details = await this._fixtureScraper.getFixtureDetails(reference.ref);
+                    // if (details.success) {
+                    //     // eslint-disable-next-line no-await-in-loop
+                    //     const detailsResult = await this._fixtureService.addDetails(details.value);
+                    //     savedCount += detailsResult.success ? 1 : 0;
+                    // }
+
                     // eslint-disable-next-line no-await-in-loop
-                    const details = await this._fixtureScraper.getFixtureDetails(reference.ref);
-                    if (details.success) {
-                        // eslint-disable-next-line no-await-in-loop
-                        const detailsResult = await this._fixtureService.addDetails(details.value);
-                        savedCount += detailsResult.success ? 1 : 0;
+                    const scrappingResult = await this._fixtureService.scrapeFixtureDetails({ id: reference.ref });
+                    if (scrappingResult.success) {
+                        savedCount += scrappingResult.value ? 1 : 0;
                     }
                 }
             }

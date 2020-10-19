@@ -87,10 +87,11 @@ class GaloDigitalRef implements ExternalReference {
 }
 
 export class ExternalReferenceFactory {
-    private static _supportedProviders = ['fotmob', 'galodigital'];
+    private static _supportedProviders = ['fotmob', 'galodigital', 'sofascore'];
 
     static create(reference: Refs): ExternalReference {
         const { provider, ref } = reference;
+
         switch (provider) {
             case 'fotmob':
                 return new FotmobRef(ref);

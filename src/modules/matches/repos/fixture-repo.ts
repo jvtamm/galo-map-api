@@ -14,4 +14,5 @@ export interface FixtureRepo {
     save(fixture: Fixture): Promise<Fixture>;
     search(filters: FixtureFilters): Promise<Fixture[]>;
     getLast(): Promise<Maybe<Fixture>>;
+    getTodaysFixture(): Promise<Maybe<Fixture>>;
 }

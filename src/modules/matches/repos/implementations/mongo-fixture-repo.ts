@@ -196,4 +196,22 @@ export class MongoFixtureRepo extends GenericMongoRepository<Fixture, FixtureCol
 
         return Maybe.fromNull(fixture).map(this.loadDependencies).map(this.mapper.toDomain);
     }
+
+    async getTodaysFixture(): Promise<Maybe<Fixture>> {
+        const today = new Date();
+
+        const beginOfDay = new Date(today.getTime());
+        beginOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date(today.getTime());
+        endOfDay.setHours(23, 59, 59, 59);
+
+        const fixture = await this.collection.findOne({ matchDate: { $gte: beginOfDay, $lte: endOfDay } });
+        if (!fixture) return Maybe.none();
+
+        const maybeDetails = await this._fixtureDetailsRepo.getByMatchId(fixture._id);
+        fixture.details = maybeDetails.fold<undefined | FixtureDetails>(undefined)((value) => value as FixtureDetails);
+
+        return Maybe.fromNull(fixture).map(this.loadDependencies).map(this.mapper.toDomain);
+    }
 }

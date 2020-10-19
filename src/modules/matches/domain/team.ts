@@ -39,7 +39,7 @@ export class Team {
     }
 
     get displayName(): string {
-        if (this._props.country !== 'BRA') {
+        if (this._props.country !== 'BRA' && !this._props.displayName.includes('-')) {
             return `${this._props.displayName}-${this._props.country}`;
         }
 

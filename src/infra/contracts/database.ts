@@ -6,7 +6,8 @@ export interface DatabaseDriver {
     shutDown(force?: boolean): Promise<void>;
     // createSchema<T, U>(name: string, data: T): Maybe<U>;
     retreiveSchema<T>(name: string): Maybe<T>;
-    getSchema<T>(name: string, database?: string): T
+    getSchema<T>(name: string, database?: string): T;
+    getDb(): any;
 }
 
 // interface SchemaItemTemplate {
